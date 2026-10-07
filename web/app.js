@@ -320,7 +320,7 @@ ${wrong.length ? `<section class="panel"><h2>間違えた問題（${wrong.length
 
 // 表を横スクロール可能な枠で包む（狭い画面対策）
 function wrapTables() {
-  app.querySelectorAll(".text table, .scenario table").forEach((t) => {
+  app.querySelectorAll(".text table, .scenario table, .qtext table").forEach((t) => {
     if (t.parentElement.classList.contains("tablewrap")) return;
     const w = document.createElement("div");
     w.className = "tablewrap";

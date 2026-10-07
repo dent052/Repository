@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   shuffle, isChapterUnlocked, isPracticeUnlocked, isQuizPassed,
-  recordAnswer, weakIds, allocate, buildMockExam, scoreExam,
+  recordAnswer, weakIds, MOCK_QUOTA, MOCK_A, buildMockExam, scoreExam,
 } from "../web/core.js";
 
 const fixedRng = () => 0;
@@ -52,22 +52,25 @@ test("weakIds は直近不正解と、間違えたことがあり2連続正解�
   assert.deepEqual(weakIds(stats).sort(), ["a", "b"]);
 });
 
-test("allocate は問題数に比例して合計 total を割り当てる", () => {
-  const out = allocate({ 1: 10, 2: 20, 3: 10 }, 8);
-  assert.deepEqual(out, { 1: 2, 2: 4, 3: 2 });
-  const odd = allocate({ 1: 10, 2: 11, 3: 10 }, 4);
-  assert.equal(Object.values(odd).reduce((a, b) => a + b, 0), 4);
-  assert.equal(odd[2], 2);
+test("模擬試験の科目A配分は本番の内訳（セキュリティ30・法務4・その他14）に合わせる", () => {
+  const sum = (chs) => chs.reduce((t, ch) => t + MOCK_QUOTA[ch], 0);
+  assert.equal(sum([1, 2, 3, 4, 5, 6, 7, 8, 9]), MOCK_A);
+  assert.equal(sum([1, 2, 3, 4, 5, 6]), 30);
+  assert.equal(MOCK_QUOTA[7], 4);
+  assert.equal(sum([8, 9]), 14);
 });
 
 test("buildMockExam は科目A 48問 + 科目B 12問を重複なく組む", () => {
-  const qa = Array.from({ length: 90 }, (_, i) => ({ id: `a${i}`, chapter: (i % 9) + 1 }));
+  const qa = Array.from({ length: 108 }, (_, i) => ({ id: `a${i}`, chapter: (i % 9) + 1 }));
   const qb = Array.from({ length: 15 }, (_, i) => ({ id: `b${i}`, chapter: 10 }));
   const exam = buildMockExam(qa, qb, fixedRng);
   assert.equal(exam.length, 60);
   assert.equal(new Set(exam.map((q) => q.id)).size, 60);
   assert.equal(exam.filter((q) => q.chapter === 10).length, 12);
   assert.ok(exam.slice(0, 48).every((q) => q.chapter !== 10));
+  for (let ch = 1; ch <= 9; ch++) {
+    assert.equal(exam.filter((q) => q.chapter === ch).length, MOCK_QUOTA[ch], `章${ch}`);
+  }
 });
 
 test("scoreExam は1000点換算で600点以上を合格とし、章別に集計する", () => {
