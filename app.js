@@ -413,3 +413,7 @@ function wrapTables() {
 
 render();
 connectRemote();
+// インストール版（manifest のあるページ）だけ、オフライン用の Service Worker を登録する
+if (document.querySelector('link[rel="manifest"]') && "serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js").catch(() => { /* 登録できなくても通常どおり使える */ });
+}
