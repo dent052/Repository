@@ -2,7 +2,7 @@ import { chapters } from "./data/chapters.js";
 import { questionsA } from "./data/questions-a.js";
 import { questionsB } from "./data/questions-b.js";
 import {
-  QUIZ_SIZE, MOCK_MINUTES, PASS_SCORE, shuffle, isChapterUnlocked, isPracticeUnlocked,
+  QUIZ_SIZE, MOCK_MINUTES, PASS_SCORE, shuffle,
   isQuizPassed, recordAnswer, weakIds, buildMockExam, scoreExam,
 } from "./core.js";
 
@@ -81,7 +81,6 @@ function render() {
 }
 
 function renderHome() {
-  const unlocked = isPracticeUnlocked(chapterIds, progress.passed);
   const stats = Object.values(progress.stats);
   const answered = stats.reduce((n, s) => n + s.c + s.w, 0);
   const correct = stats.reduce((n, s) => n + s.c, 0);
@@ -101,28 +100,25 @@ function renderHome() {
 </section>
 <section class="panel">
   <h2>1. 体系学習</h2>
-  <p class="muted">章を順に読み、確認テスト（${QUIZ_SIZE}問中${Math.ceil(QUIZ_SIZE * 0.8)}問以上）に合格すると次の章が開きます。</p>
+  <p class="muted">第1章から順に読み、確認テスト（${QUIZ_SIZE}問中${Math.ceil(QUIZ_SIZE * 0.8)}問以上で合格）で理解を確かめましょう。どの章からでも開けます。</p>
   <ol class="chapters">
     ${chapters.map((c) => {
-      const open = isChapterUnlocked(chapterIds, progress.passed, c.id);
-      const pill = progress.passed[c.id] ? '<span class="pill done">合格</span>'
-        : open ? '<span class="pill open">学習中</span>' : '<span class="pill lock">未開放</span>';
+      const pill = progress.passed[c.id] ? '<span class="pill done">合格</span>' : '<span class="pill open">未合格</span>';
       return `<li><span class="no">${String(c.id).padStart(2, "0")}</span>
-        <span>${open ? `<button class="back" data-chapter="${c.id}">${c.title}</button>` : `<span class="muted">${c.title}</span>`}</span>${pill}</li>`;
+        <button class="back" data-chapter="${c.id}">${c.title}</button>${pill}</li>`;
     }).join("")}
   </ol>
 </section>
 <section class="panel">
   <h2>2. 演習</h2>
-  ${unlocked ? "" : '<p class="muted">全章の確認テストに合格すると開きます。</p>'}
   <div class="modes">
-    <button class="mode primary" data-mode="mock" ${unlocked ? "" : "disabled"}><b>模擬試験</b><span>科目A 48問 + 科目B 12問 / ${MOCK_MINUTES}分</span></button>
-    <button class="mode" data-mode="b" ${unlocked ? "" : "disabled"}><b>科目B演習</b><span class="muted">事例問題 ${questionsB.length}問</span></button>
-    <button class="mode" data-mode="weak" ${unlocked && weak.length ? "" : "disabled"}><b>弱点復習</b><span class="muted">${weak.length ? `${weak.length}問` : "弱点はまだありません"}</span></button>
+    <button class="mode primary" data-mode="mock"><b>模擬試験</b><span>科目A 48問 + 科目B 12問 / ${MOCK_MINUTES}分</span></button>
+    <button class="mode" data-mode="b"><b>科目B演習</b><span class="muted">事例問題 ${questionsB.length}問</span></button>
+    <button class="mode" data-mode="weak" ${weak.length ? "" : "disabled"}><b>弱点復習</b><span class="muted">${weak.length ? `${weak.length}問` : "弱点はまだありません"}</span></button>
   </div>
   <p class="muted" style="margin-top:16px">分野別演習（科目A）</p>
   <div class="row">
-    ${chapters.filter((c) => c.id <= 9).map((c) => `<button data-field="${c.id}" ${unlocked ? "" : "disabled"} title="${c.title}">${c.id}. ${c.title}</button>`).join("")}
+    ${chapters.filter((c) => c.id <= 9).map((c) => `<button data-field="${c.id}" title="${c.title}">${c.id}. ${c.title}</button>`).join("")}
   </div>
 </section>
 ${progress.exams.length ? `<section class="panel"><h2>模擬試験の記録</h2>

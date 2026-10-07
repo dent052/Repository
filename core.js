@@ -18,15 +18,6 @@ export function shuffle(arr, rng = Math.random) {
   return out;
 }
 
-export function isChapterUnlocked(chapterIds, passed, id) {
-  const i = chapterIds.indexOf(id);
-  return i === 0 || (i > 0 && Boolean(passed[chapterIds[i - 1]]));
-}
-
-export function isPracticeUnlocked(chapterIds, passed) {
-  return chapterIds.every((id) => passed[id]);
-}
-
 export function isQuizPassed(correct, total) {
   return correct / total >= PASS_RATE;
 }

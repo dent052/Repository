@@ -54,11 +54,11 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 .chapters { list-style: none; margin: 0; padding: 0; display: grid; }
 .chapters li { display: grid; grid-template-columns: 2.2em 1fr auto; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }
 .chapters li:last-child { border-bottom: none; }
+.chapters .back { width: 100%; min-height: 44px; padding: .4em 0; font-size: 1rem; }
 .chapters .no { font-family: var(--f-num); color: var(--muted); }
 .pill { font-size: .75rem; padding: .1em .7em; border-radius: 999px; white-space: nowrap; }
 .pill.done { background: var(--ok-soft); color: var(--ok); }
 .pill.open { background: var(--accent-soft); color: var(--accent); }
-.pill.lock { background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
 .modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
 .mode { text-align: left; display: grid; gap: 4px; padding: 14px 16px; }
 .mode b { font-size: 1rem; }
