@@ -64,10 +64,10 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 .mode b { font-size: 1rem; }
 
 /* テキスト */
-.text table, .scenario table { border-collapse: collapse; width: 100%; font-size: .92rem; }
+.text table, .scenario table, .qtext table { border-collapse: collapse; width: 100%; font-size: .92rem; margin: .5em 0; }
 .tablewrap { overflow-x: auto; }
-.text th, .text td, .scenario th, .scenario td { border: 1px solid var(--line); padding: .45em .6em; text-align: left; vertical-align: top; }
-.text th, .scenario th { background: var(--accent-soft); }
+.text th, .text td, .scenario th, .scenario td, .qtext th, .qtext td { border: 1px solid var(--line); padding: .45em .6em; text-align: left; vertical-align: top; }
+.text th, .scenario th, .qtext th { background: var(--accent-soft); }
 .tip { background: var(--tip); border-left: 4px solid var(--tip-line); padding: .7em 1em; border-radius: 4px; }
 .goal { background: var(--accent-soft); padding: .7em 1em; border-radius: 8px; }
 blockquote { margin: .5em 0; padding: .6em 1em; border-left: 3px solid var(--line); background: var(--bg); }

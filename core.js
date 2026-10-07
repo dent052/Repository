@@ -6,6 +6,8 @@ export const MOCK_A = 48;
 export const MOCK_B = 12;
 export const MOCK_MINUTES = 120;
 export const PASS_SCORE = 600;
+// 模擬試験の科目A配分（章: 問題数）。本番の内訳 セキュリティ30（章1〜6）・法務4（章7）・その他14（章8・9）に合わせる。
+export const MOCK_QUOTA = { 1: 5, 2: 5, 3: 5, 4: 5, 5: 5, 6: 5, 7: 4, 8: 5, 9: 9 };
 
 export function shuffle(arr, rng = Math.random) {
   const out = [...arr];
@@ -49,23 +51,9 @@ export function weakIds(stats) {
   });
 }
 
-// counts: { 章: 問題数 } を total 問に比例配分する。端数は問題数の多い章から 1 問ずつ足す。
-export function allocate(counts, total) {
-  const sum = Object.values(counts).reduce((a, b) => a + b, 0);
-  const out = {};
-  for (const ch in counts) out[ch] = Math.floor((counts[ch] * total) / sum);
-  let rest = total - Object.values(out).reduce((a, b) => a + b, 0);
-  const order = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
-  for (let i = 0; rest > 0; i = (i + 1) % order.length, rest--) out[order[i]]++;
-  return out;
-}
-
 export function buildMockExam(questionsA, questionsB, rng = Math.random) {
-  const counts = {};
-  for (const q of questionsA) counts[q.chapter] = (counts[q.chapter] ?? 0) + 1;
-  const quota = allocate(counts, MOCK_A);
-  const partA = Object.keys(quota).flatMap((ch) =>
-    shuffle(questionsA.filter((q) => String(q.chapter) === ch), rng).slice(0, quota[ch]),
+  const partA = Object.entries(MOCK_QUOTA).flatMap(([ch, n]) =>
+    shuffle(questionsA.filter((q) => String(q.chapter) === ch), rng).slice(0, n),
   );
   return [...partA, ...shuffle(questionsB, rng).slice(0, MOCK_B)];
 }
