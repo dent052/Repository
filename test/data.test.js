@@ -48,10 +48,10 @@ test("全問題に設問・正解・解説があり、選択肢が重複しな�
 test("確認テストと模擬試験に必要な問題数がある", () => {
   for (let ch = 1; ch <= 9; ch++) {
     const n = questionsA.filter((q) => q.chapter === ch).length;
-    assert.ok(n >= 10, `章${ch} は ${n} 問しかない`);
+    assert.ok(n >= 25, `章${ch} は ${n} 問しかない`);
   }
   assert.ok(questionsA.length >= MOCK_A * 2);
-  assert.ok(questionsB.length >= Math.max(MOCK_B, QUIZ_SIZE));
+  assert.ok(questionsB.length >= MOCK_B * 2);
 });
 
 test("正解の位置が偏らない（科目A）", () => {
