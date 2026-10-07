@@ -12,10 +12,13 @@ export function bundle() {
       .replace(/^import[\s\S]*?from\s+"[^"]+";\n/gm, "")
       .replace(/^export /gm, ""),
   ).join("\n");
-  return read("index.html").replaceAll('href="icon-192.png"', `href="${icon()}"`).replace(
-    /<script type="module" src="app.js"><\/script>/,
-    () => `<script>\n${script.replaceAll("</script", "<\\/script")}</script>`,
-  );
+  return read("index.html")
+    .replace(/<link rel="manifest"[^>]*>\n/, "") // 1ファイル版はインストール版ではない
+    .replaceAll('href="icon-192.png"', `href="${icon()}"`)
+    .replace(
+      /<script type="module" src="app.js"><\/script>/,
+      () => `<script>\n${script.replaceAll("</script", "<\\/script")}</script>`,
+    );
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

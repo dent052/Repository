@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node server.js",
     "test": "node --test",
-    "build": "node build.js"
+    "build": "node build.js",
+    "deploy": "git subtree push --prefix web origin gh-pages"
   }
 }

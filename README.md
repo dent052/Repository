@@ -11,7 +11,10 @@ Node.js 20 以上が必要です（外部パッケージは使いません）。
 npm start      # http://localhost:8000 を開く
 npm test       # ロジックと問題データのテスト
 npm run build  # 1ファイル版 dist/sg-trainer.html を作る
+npm run deploy # web/ を GitHub Pages（gh-pages ブランチ）に公開する
 ```
+
+スマートフォンでは https://dent052.github.io/Repository/ を開き、ブラウザのメニューから「アプリをインストール」（又は「ホーム画面に追加」）するのがおすすめです。専用アイコンで全画面のアプリとして起動し、オフラインでも使えます。
 
 `dist/sg-trainer.html` は1つのファイルで動きます。スマートフォンや PC に保存してブラウザで開けば、サーバーなし・オフラインでも使えます。
 

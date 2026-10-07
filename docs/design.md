@@ -170,7 +170,9 @@
 
 ```
 web/index.html        画面
-web/icon.svg, web/icon-192.png  アプリのアイコン
+web/icon.svg, web/icon-*.png  アプリのアイコン
+web/manifest.webmanifest  インストール版の設定
+web/sw.js             インストール版のオフライン対応（Service Worker）
 web/app.js            画面制御（DOM 操作、保存）
 web/core.js           純粋関数（採点、弱点抽出、模擬試験の組み立て）
 web/data/chapters.js  学習テキスト
@@ -191,6 +193,17 @@ dist/sg-trainer.html  1ファイル版（ビルド結果。リポジトリに含
 
 ## アイコン
 
-- アプリのアイコンは `web/icon.svg`（紫からピンクのグラデーションに、白い盾とチェックマーク）。ホーム画面に置いたときに文字だけのアイコンにならないようにする。
-- `web/icon-192.png` は icon.svg から作った 192×192 の PNG。`<link rel="icon">` と `<link rel="apple-touch-icon">` で参照する。
-- 1ファイル版では、この PNG を data URI として HTML に埋め込む（外部ファイルなしでアイコンが付く）。
+- アプリのアイコンは `web/icon.svg`（紫からピンクのグラデーションに、白い盾とチェックマーク）。主な絵柄は中央の安全領域（直径80%の円）に収め、ランチャーが丸や角丸に切り抜いても欠けないようにする（maskable）。
+- `web/icon-192.png` と `web/icon-512.png` は icon.svg から作った PNG。
+- 1ファイル版では 192px の PNG を data URI として HTML に埋め込む。ただし Android の Chrome は、端末内のファイルから追加したショートカットにはページのアイコンを使わないため、ホーム画面に置くならインストール版（下記）を使う。
+
+## インストール版（PWA、GitHub Pages で公開）
+
+- `web/` をそのまま GitHub Pages の `gh-pages` ブランチで公開する。URL は https://dent052.github.io/Repository/ 。
+- `web/manifest.webmanifest` で名前・アイコン・テーマ色を定め、`display: standalone` で URL 欄のない全画面で起動する。
+- `web/sw.js`（Service Worker）で、アプリのファイルを端末に保存してオフラインでも開けるようにする。
+  - 取得はネットワーク優先: オンラインなら常に最新を取りに行って保存し直し、オフラインなら保存済みのものを返す。更新のたびにキャッシュ名を変える必要がない。
+  - 保存するのはアプリ自身のファイル（同じオリジンの GET）だけ。対象は決まった数のファイルなので、キャッシュは増え続けない。
+- Service Worker は manifest のリンクがあるページ（インストール版）でだけ登録する。1ファイル版と Artifact では manifest のリンクを取り除くので登録しない。
+- 公開は `npm run deploy`（`web/` を `gh-pages` ブランチにプッシュする）。初回だけ、リポジトリの Settings → Pages で「Deploy from a branch」「gh-pages」「/ (root)」を選ぶ。
+- 進捗はインストール版のブラウザ領域に保存され、1ファイル版や Artifact とは別になる。
