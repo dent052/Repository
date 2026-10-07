@@ -4,99 +4,199 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>SG 合格トレーナー</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=BIZ+UDPMincho:wght@700&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap">
 <style>
-/* 答案用紙の青インクと採点の朱を軸にした、一列の学習ノート */
+/* 丸くて明るい、毎日開きたくなるポップな学習ノート */
 :root {
-  --bg: #f6f7f9; --surface: #ffffff; --ink: #1d2433; --muted: #5d6677; --line: #d9dee7;
-  --accent: #1f4fa3; --accent-soft: #e6edf9; --ok: #1d7a4c; --ok-soft: #e3f3ea; --ng: #c0392b; --ng-soft: #fbe9e7;
-  --tip: #fff6dc; --tip-line: #e2c25a;
-  --f-body: "BIZ UDPGothic", "Hiragino Sans", "Yu Gothic", sans-serif;
-  --f-display: "BIZ UDPMincho", "Hiragino Mincho ProN", "Yu Mincho", serif;
-  --f-num: "IBM Plex Mono", ui-monospace, monospace;
+  --bg: #fff7ec; --dot: #f6e6cf; --surface: #ffffff; --ink: #2b2140; --muted: #786d8a; --line: #eedfcb; --edge: #e2cfb6;
+  --accent: #7c4dff; --accent-edge: #5629d9; --accent-soft: #efe8ff; --pink: #ff5c8a; --yellow: #ffcf3f; --flame: #ff8a00;
+  --ok: #16a37f; --ok-soft: #dcf7ee; --ok-edge: #0f7e62; --ng: #ef4b55; --ng-soft: #ffe5e6;
+  --tip: #fff3c4; --tip-line: #ffcf3f;
+  --f-body: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", "Hiragino Sans", "Yu Gothic", sans-serif;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #12161f; --surface: #1a202c; --ink: #e5e9f0; --muted: #9aa4b5; --line: #2e3646;
-    --accent: #7da6f0; --accent-soft: #22304a; --ok: #5cc48c; --ok-soft: #173326; --ng: #f08072; --ng-soft: #3a1f1c;
-    --tip: #2f2a17; --tip-line: #8a7631; color-scheme: dark;
+    --bg: #1b1530; --dot: #241c3d; --surface: #261e40; --ink: #f4efff; --muted: #b4a8cf; --line: #3a2f5c; --edge: #15102a;
+    --accent: #a98bff; --accent-edge: #6c48e8; --accent-soft: #33295a; --pink: #ff7aa2; --yellow: #ffd95e; --flame: #ffa53d;
+    --ok: #4fe0b9; --ok-soft: #173d36; --ok-edge: #1c8f72; --ng: #ff7d81; --ng-soft: #4a2230;
+    --tip: #3a3220; --tip-line: #c9a62c; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #12161f; --surface: #1a202c; --ink: #e5e9f0; --muted: #9aa4b5; --line: #2e3646;
-  --accent: #7da6f0; --accent-soft: #22304a; --ok: #5cc48c; --ok-soft: #173326; --ng: #f08072; --ng-soft: #3a1f1c;
-  --tip: #2f2a17; --tip-line: #8a7631; color-scheme: dark;
+  --bg: #1b1530; --dot: #241c3d; --surface: #261e40; --ink: #f4efff; --muted: #b4a8cf; --line: #3a2f5c; --edge: #15102a;
+  --accent: #a98bff; --accent-edge: #6c48e8; --accent-soft: #33295a; --pink: #ff7aa2; --yellow: #ffd95e; --flame: #ffa53d;
+  --ok: #4fe0b9; --ok-soft: #173d36; --ok-edge: #1c8f72; --ng: #ff7d81; --ng-soft: #4a2230;
+  --tip: #3a3220; --tip-line: #c9a62c; color-scheme: dark;
 }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.8 var(--f-body); }
-main { max-width: 760px; margin: 0 auto; padding-inline: 16px; padding-block: 24px 64px; display: grid; gap: 24px; }
-h1, h2 { font-family: var(--f-display); line-height: 1.4; margin: 0; text-wrap: balance; }
+body { margin: 0; color: var(--ink); font: 16px/1.8 var(--f-body);
+  background: var(--bg) radial-gradient(var(--dot) 1.5px, transparent 1.6px) 0 0 / 22px 22px; }
+main { max-width: 760px; margin: 0 auto; padding-inline: 16px; padding-block: 20px 64px; display: grid; gap: 18px; }
+h1, h2 { line-height: 1.35; margin: 0; font-weight: 800; text-wrap: balance; }
 h1 { font-size: 1.6rem; }
-h2 { font-size: 1.25rem; }
-h3 { font-size: 1.05rem; margin: 1.6em 0 .4em; padding-bottom: .2em; border-bottom: 1px solid var(--line); }
+h2 { font-size: 1.15rem; margin-bottom: .3em; }
+h3 { font-size: 1.05rem; margin: 1.6em 0 .5em; padding: .2em .7em; border-radius: 10px; background: var(--accent-soft); color: var(--accent-edge); }
+:root[data-theme="dark"] h3 { color: var(--accent); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) h3 { color: var(--accent); } }
 p { margin: .5em 0; }
 a { color: var(--accent); }
-button { font: inherit; cursor: pointer; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); padding: .55em 1em; }
-button:focus-visible, a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
-button.primary { background: var(--accent); border-color: var(--accent); color: var(--surface); font-weight: 700; }
-button:disabled { opacity: .45; cursor: not-allowed; }
-.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.muted { color: var(--muted); font-size: .9rem; }
-.num { font-family: var(--f-num); font-variant-numeric: tabular-nums; }
-.eyebrow { font-size: .8rem; letter-spacing: .08em; color: var(--muted); }
-.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 20px; min-width: 0; }
-.back { background: none; border: none; color: var(--accent); padding: 0; justify-self: start; text-align: left; }
-.choice:disabled { opacity: 1; cursor: default; }
+b { font-weight: 800; }
 
-/* ホーム */
-.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
-.stat b { display: block; font-family: var(--f-num); font-size: 1.5rem; }
-.chapters { list-style: none; margin: 0; padding: 0; display: grid; }
-.chapters li { display: grid; grid-template-columns: 2.2em 1fr auto; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }
-.chapters li:last-child { border-bottom: none; }
-.chapters .back { width: 100%; min-height: 44px; padding: .4em 0; font-size: 1rem; }
-.chapters .no { font-family: var(--f-num); color: var(--muted); }
-.pill { font-size: .75rem; padding: .1em .7em; border-radius: 999px; white-space: nowrap; }
-.pill.done { background: var(--ok-soft); color: var(--ok); }
-.pill.open { background: var(--accent-soft); color: var(--accent); }
+/* ボタン: ぷっくりした押せる形 */
+button { font: inherit; font-weight: 700; cursor: pointer; border-radius: 14px; border: 2px solid var(--line); background: var(--surface); color: var(--ink);
+  padding: .6em 1.1em; box-shadow: 0 4px 0 var(--edge); transition: transform .08s, box-shadow .08s; }
+button:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 var(--edge); }
+button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 4px 0 var(--accent-edge); }
+button.primary:active { box-shadow: 0 1px 0 var(--accent-edge); }
+button:disabled { opacity: .45; cursor: not-allowed; }
+.back { background: none; border: none; box-shadow: none; color: var(--accent); padding: 0; justify-self: start; text-align: left; }
+.back:active:not(:disabled) { transform: none; box-shadow: none; }
+
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.between { justify-content: space-between; }
+.muted { color: var(--muted); }
+.small { font-size: .85rem; }
+.num { font-variant-numeric: tabular-nums; }
+.eyebrow { font-size: .8rem; font-weight: 700; color: var(--muted); }
+.label { font-size: .85rem; font-weight: 800; color: var(--accent); }
+.card { background: var(--surface); border: 2px solid var(--line); border-radius: 22px; padding: 18px 20px; min-width: 0; box-shadow: 0 6px 0 var(--line); }
+.badge { font-size: .75rem; font-weight: 800; padding: .15em .8em; border-radius: 999px; background: var(--ok); color: #fff; white-space: nowrap; }
+
+/* ホーム: ヘッダーと連続日数 */
+.hero-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.hero-head h1 { background: linear-gradient(90deg, var(--accent), var(--pink)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.streak { display: grid; justify-items: center; line-height: 1.1; padding: 8px 14px; border-radius: 18px; background: var(--surface); border: 2px solid var(--line); box-shadow: 0 4px 0 var(--line); filter: grayscale(1); opacity: .8; }
+.streak.on { filter: none; opacity: 1; border-color: var(--flame); box-shadow: 0 4px 0 var(--flame); }
+.streak .flame { font-size: 1.4rem; }
+.streak b { font-size: 1.4rem; color: var(--flame); }
+.streak small { font-size: .7rem; font-weight: 700; color: var(--muted); }
+
+/* 合格予測メーター */
+.meter-card { background: linear-gradient(135deg, var(--accent-soft), var(--surface) 70%); }
+.big { font-size: 1rem; font-weight: 700; color: var(--muted); }
+.big b { font-size: 3rem; line-height: 1.1; color: var(--ink); }
+.meter { position: relative; height: 18px; border-radius: 999px; background: var(--line); margin: 6px 0 4px; }
+.meter i { position: absolute; inset: 0 auto 0 0; width: var(--w); border-radius: 999px; background: linear-gradient(90deg, var(--pink), var(--yellow)); }
+.meter .line { position: absolute; left: 60%; top: -5px; bottom: -5px; width: 3px; border-radius: 2px; background: var(--ink); }
+.meter .line::after { content: "合格600"; position: absolute; top: -1.6em; left: 50%; transform: translateX(-50%); font-size: .7rem; font-weight: 800; white-space: nowrap; }
+.meter-card .meter { margin-top: 22px; }
+.meter-msg { margin: .3em 0 .6em; }
+.chip { font-size: .9rem; padding: .45em .9em; border-radius: 999px; border-color: var(--accent); color: var(--accent); box-shadow: 0 3px 0 var(--accent); text-align: left; }
+
+/* 今日の復習 */
+.cta { width: 100%; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; text-align: left; padding: 14px 18px;
+  background: linear-gradient(135deg, var(--accent), var(--pink)); border: none; color: #fff; border-radius: 18px; box-shadow: 0 5px 0 var(--accent-edge); }
+.cta:active:not(:disabled) { box-shadow: 0 2px 0 var(--accent-edge); }
+.cta-emoji { font-size: 2rem; }
+.cta-text { display: grid; line-height: 1.4; }
+.cta b { font-size: 1.2rem; }
+.cta .go { font-weight: 800; background: #fff; color: var(--accent-edge); padding: .3em .8em; border-radius: 999px; }
+.done-msg { display: flex; gap: 14px; align-items: center; }
+.done-msg > div { display: grid; line-height: 1.5; }
+.plan { margin: .4em 0 0; }
+.plan b { color: var(--accent); }
+input[type="date"] { font: inherit; font-weight: 700; color: var(--ink); background: var(--bg); border: 2px solid var(--line); border-radius: 12px; padding: .3em .6em; }
+
+/* 章一覧 */
+.chapters { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.ch { width: 100%; display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; text-align: left; padding: 10px 14px; }
+.ch-icon { font-size: 1.6rem; width: 1.6em; height: 1.6em; display: grid; place-items: center; border-radius: 12px; background: var(--accent-soft); }
+.ch-body { display: grid; gap: 4px; }
+.ch-title { line-height: 1.4; }
+.mini { height: 8px; border-radius: 999px; background: var(--line); overflow: hidden; }
+.mini i { display: block; height: 100%; width: var(--w); border-radius: 999px; background: linear-gradient(90deg, var(--ok), var(--yellow)); }
+
+/* 演習 */
 .modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
-.mode { text-align: left; display: grid; gap: 4px; padding: 14px 16px; }
-.mode b { font-size: 1rem; }
+.mode { text-align: left; display: grid; gap: 2px; padding: 14px 16px; }
+.mode.mock { background: var(--yellow); border-color: var(--yellow); color: #3a2a00; box-shadow: 0 4px 0 #d9a400; }
+.mode-emoji { font-size: 1.8rem; }
+.mode small { font-weight: 400; font-size: .85rem; }
+.fields { display: flex; flex-wrap: wrap; gap: 8px; }
+.fields button { font-size: .9rem; padding: .45em .9em; border-radius: 999px; }
 
 /* テキスト */
 .text table, .scenario table, .qtext table { border-collapse: collapse; width: 100%; font-size: .92rem; margin: .5em 0; }
 .tablewrap { overflow-x: auto; }
-.text th, .text td, .scenario th, .scenario td, .qtext th, .qtext td { border: 1px solid var(--line); padding: .45em .6em; text-align: left; vertical-align: top; }
+.text th, .text td, .scenario th, .scenario td, .qtext th, .qtext td { border: 2px solid var(--line); padding: .45em .6em; text-align: left; vertical-align: top; }
 .text th, .scenario th, .qtext th { background: var(--accent-soft); }
-.tip { background: var(--tip); border-left: 4px solid var(--tip-line); padding: .7em 1em; border-radius: 4px; }
-.goal { background: var(--accent-soft); padding: .7em 1em; border-radius: 8px; }
-blockquote { margin: .5em 0; padding: .6em 1em; border-left: 3px solid var(--line); background: var(--bg); }
+.tip { background: var(--tip); border: 2px dashed var(--tip-line); padding: .7em 1em; border-radius: 14px; }
+.tip::before { content: "💡 "; }
+.goal { background: var(--accent-soft); padding: .7em 1em; border-radius: 14px; }
+blockquote { margin: .5em 0; padding: .6em 1em; border-left: 4px solid var(--line); background: var(--bg); border-radius: 8px; }
 
 /* 問題 */
-.scenario { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; }
-.choices { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 8px; }
-.choice { width: 100%; text-align: left; display: grid; grid-template-columns: 2em 1fr; gap: 8px; align-items: start; padding: .7em .9em; }
-.choice .lab { font-weight: 700; color: var(--accent); }
+.qcard { display: grid; gap: 6px; }
+.bar { height: 10px; background: var(--line); border-radius: 999px; overflow: hidden; margin: 4px 0 10px; }
+.bar i { display: block; height: 100%; width: var(--w); border-radius: 999px; background: linear-gradient(90deg, var(--accent), var(--pink)); }
+.scenario { background: var(--bg); border: 2px solid var(--line); border-radius: 16px; padding: 12px 16px; margin-bottom: 12px; }
+.qtext { font-weight: 700; }
+.choices { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 10px; }
+.choice { position: relative; width: 100%; text-align: left; display: grid; grid-template-columns: 2em 1fr; gap: 8px; align-items: start; padding: .75em .9em; font-weight: 400; }
+.choice:disabled { opacity: 1; cursor: default; }
+.choice .lab { display: grid; place-items: center; width: 1.7em; height: 1.7em; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font-weight: 800; }
 .choice.picked { border-color: var(--accent); background: var(--accent-soft); }
-.choice.correct { border-color: var(--ok); background: var(--ok-soft); }
-.choice.wrong { border-color: var(--ng); background: var(--ng-soft); }
-.verdict { font-weight: 700; font-size: 1.1rem; }
+.choice.correct { border-color: var(--ok); background: var(--ok-soft); box-shadow: 0 4px 0 var(--ok-edge); }
+.choice.correct .lab { background: var(--ok); color: #fff; }
+.choice.wrong { border-color: var(--ng); background: var(--ng-soft); box-shadow: 0 4px 0 var(--ng); }
+.choice.wrong .lab { background: var(--ng); color: #fff; }
+.verdict { font-weight: 800; font-size: 1.2rem; }
 .verdict.ok { color: var(--ok); }
 .verdict.ng { color: var(--ng); }
-.explain { margin-top: 16px; border-top: 1px dashed var(--line); padding-top: 12px; }
-.bar { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
-.bar i { display: block; height: 100%; background: var(--accent); }
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(2.6em, 1fr)); gap: 6px; }
-.grid button { padding: .3em 0; font-family: var(--f-num); font-size: .85rem; }
+.explain { margin-top: 14px; border-radius: 16px; padding: 12px 16px; background: var(--bg); border: 2px solid var(--line); }
+.explain.ok { border-color: var(--ok); }
+.explain.ng { border-color: var(--ng); }
+.next { font-size: 1.05rem; padding: .7em 1.6em; }
+.combo { font-weight: 800; color: #fff; background: var(--flame); padding: .2em .9em; border-radius: 999px; box-shadow: 0 3px 0 #c76a00; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(2.7em, 1fr)); gap: 6px; margin-top: 8px; }
+.grid button { padding: .3em 0; font-size: .85rem; border-radius: 10px; box-shadow: 0 2px 0 var(--edge); }
 .grid button.ans { background: var(--accent-soft); border-color: var(--accent); }
-.grid button.cur { outline: 2px solid var(--ink); }
-.timer { font-family: var(--f-num); font-size: 1.1rem; }
-.confirm { background: var(--ng-soft); border: 1px solid var(--ng); border-radius: 8px; padding: 12px; }
-.score { font-family: var(--f-num); font-size: 2.6rem; line-height: 1.2; }
-table.result { border-collapse: collapse; width: 100%; font-size: .92rem; }
-table.result td, table.result th { padding: .4em .5em; border-bottom: 1px solid var(--line); text-align: left; }
-table.result td.r { text-align: right; font-family: var(--f-num); }
-@media (prefers-reduced-motion: no-preference) { .bar i { transition: width .3s; } }
+.grid button.cur { outline: 3px solid var(--pink); }
+.timer { font-weight: 800; font-size: 1.1rem; }
+.confirm { margin-top: 12px; background: var(--ng-soft); border: 2px solid var(--ng); border-radius: 14px; padding: 12px; }
+
+/* 結果 */
+.result-card { text-align: center; }
+.result-emoji { font-size: 3.5rem; line-height: 1.2; }
+.score { font-size: 2.8rem; font-weight: 800; line-height: 1.2; }
+.score small { font-size: 1rem; }
+table.result { border-collapse: collapse; width: 100%; font-size: .92rem; text-align: left; }
+table.result td, table.result th { padding: .4em .5em; border-bottom: 2px solid var(--line); text-align: left; }
+table.result td.r { text-align: right; }
+details { border-top: 2px solid var(--line); padding: 8px 0; }
+summary { cursor: pointer; }
+
+/* 正解の紙吹雪 */
+.burst { position: absolute; left: 50%; top: 50%; pointer-events: none; }
+.burst i { position: absolute; font-style: normal; font-size: 1.2rem; transform: translate(-50%, -50%); opacity: 0; }
+
+/* アニメーション（動きを減らす設定では止める） */
+@media (prefers-reduced-motion: no-preference) {
+  .pop-in { animation: pop-in .45s cubic-bezier(.2, 1.4, .4, 1) both; animation-delay: var(--d, 0s); }
+  .meter i, .mini i { animation: grow 1s cubic-bezier(.2, .9, .3, 1) both; }
+  .bar i { transition: width .3s; }
+  .streak.on .flame { display: inline-block; animation: flicker 1.6s ease-in-out infinite; }
+  .cta .go { animation: pulse 1.4s ease-in-out infinite; }
+  .choice.correct { animation: pop .4s cubic-bezier(.2, 1.6, .4, 1); }
+  .choice.wrong { animation: shake .4s; }
+  .explain { animation: slide-up .35s ease-out both; }
+  .combo { animation: pop .4s cubic-bezier(.2, 1.6, .4, 1); }
+  .result-emoji { animation: bounce 1s cubic-bezier(.2, 1.6, .4, 1) both; }
+  .burst i { animation: fly .8s ease-out forwards; }
+}
+@keyframes pop-in { from { opacity: 0; transform: scale(.92) translateY(8px); } }
+@keyframes grow { from { width: 0; } }
+@keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.05); } 100% { transform: scale(1); } }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
+@keyframes slide-up { from { opacity: 0; transform: translateY(10px); } }
+@keyframes bounce { 0% { transform: scale(0) rotate(-20deg); } 60% { transform: scale(1.2) rotate(8deg); } 100% { transform: scale(1); } }
+@keyframes pulse { 50% { transform: scale(1.1); } }
+@keyframes flicker { 50% { transform: scale(1.15) rotate(-6deg); } }
+@keyframes fly {
+  0% { opacity: 1; transform: translate(-50%, -50%) rotate(var(--a)) translateY(0) rotate(calc(-1 * var(--a))); }
+  100% { opacity: 0; transform: translate(-50%, -50%) rotate(var(--a)) translateY(-70px) rotate(calc(-1 * var(--a))) scale(1.3); }
+}
 </style>
 </head>
 <body>
@@ -126,24 +226,86 @@ function isQuizPassed(correct, total) {
   return correct / total >= PASS_RATE;
 }
 
-function recordAnswer(stats, id, correct) {
-  const s = stats[id] ?? { c: 0, w: 0, streak: 0, last: null };
+// ---- 日付（端末の現地日付を "YYYY-MM-DD" で扱う） ----
+function localDate(d = new Date()) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function addDays(date, n) {
+  const [y, m, d] = date.split("-").map(Number);
+  return localDate(new Date(y, m - 1, d + n));
+}
+
+const daysBetween = (from, to) => Math.round((Date.parse(to) - Date.parse(from)) / 86400000);
+
+// ---- 間隔反復 ----
+const INTERVALS = [1, 1, 3, 7, 14, 30]; // 習熟段階 box ごとの、次の復習までの日数
+
+function recordAnswer(stats, id, correct, today) {
+  const s = stats[id] ?? { c: 0, w: 0, box: 0 };
+  const box = correct ? Math.min(s.box + 1, INTERVALS.length - 1) : 0;
   return {
     ...stats,
     [id]: {
       c: s.c + (correct ? 1 : 0),
       w: s.w + (correct ? 0 : 1),
-      streak: correct ? s.streak + 1 : 0,
       last: correct,
+      box,
+      due: addDays(today, INTERVALS[box]),
     },
   };
 }
 
-function weakIds(stats) {
-  return Object.keys(stats).filter((id) => {
-    const s = stats[id];
-    return s.last === false || (s.w > 0 && s.streak < 2);
-  });
+function dueIds(stats, today) {
+  return Object.keys(stats).filter((id) => stats[id].due <= today);
+}
+
+// ---- 合格予測 ----
+const EXAM_QUOTA = { ...MOCK_QUOTA, 10: MOCK_B };
+const EXAM_TOTAL = MOCK_A + MOCK_B;
+
+function predictScore(stats, questions) {
+  const rates = {};
+  for (const ch in EXAM_QUOTA) {
+    const answered = questions.filter((q) => String(q.chapter) === ch && stats[q.id]);
+    const right = answered.filter((q) => stats[q.id].last).length;
+    rates[ch] = right / (answered.length + 5); // 解いた数が少ないうちは低めに出す
+  }
+  const pt = (ch, rate) => (1000 / EXAM_TOTAL) * EXAM_QUOTA[ch] * rate;
+  const score = Math.round(Object.keys(EXAM_QUOTA).reduce((t, ch) => t + pt(ch, rates[ch]), 0));
+  let focus = null;
+  for (const ch in EXAM_QUOTA) {
+    const gain = Math.round(pt(ch, 0.8 - rates[ch]));
+    if (gain > 0 && (!focus || gain > focus.gain)) focus = { chapter: Number(ch), gain };
+  }
+  return { score, rates, focus };
+}
+
+// ---- 連続日数 ----
+function markDay(days, today) {
+  return days.includes(today) ? days : [...days, today].slice(-400);
+}
+
+// 今日（未学習なら昨日）からさかのぼって数える。1日だけの休みは7日に1回まで許す。
+function streakDays(days, today) {
+  const set = new Set(days);
+  let d = set.has(today) ? today : addDays(today, -1);
+  let count = 0;
+  let forgiven = null;
+  while (true) {
+    if (set.has(d)) count++;
+    else if (count > 0 && set.has(addDays(d, -1)) && (!forgiven || daysBetween(d, forgiven) >= 7)) forgiven = d;
+    else break;
+    d = addDays(d, -1);
+  }
+  return count;
+}
+
+// ---- 試験日 ----
+function examPlan(examDate, today, unanswered) {
+  if (!examDate) return null;
+  const daysLeft = Math.max(0, daysBetween(today, examDate));
+  return { daysLeft, perDay: daysLeft ? Math.ceil(unanswered / daysLeft) : 0 };
 }
 
 function buildMockExam(questionsA, questionsB, rng = Math.random) {
@@ -4915,15 +5077,20 @@ const questionsB = [
 
 
 const LABELS = "アイウエオカキクケコ";
+const ICONS = { 1: "🛡️", 2: "🦠", 3: "🔑", 4: "🧱", 5: "📋", 6: "🚨", 7: "⚖️", 8: "💻", 9: "📊", 10: "🧩" };
 const KEY = "sg-trainer-progress";
 const MAX_EXAMS = 20;
 const app = document.getElementById("app");
-const chapterIds = chapters.map((c) => c.id);
-const byId = new Map([...questionsA, ...questionsB].map((q) => [q.id, q]));
+const allQuestions = [...questionsA, ...questionsB];
+const byId = new Map(allQuestions.map((q) => [q.id, q]));
 const poolOf = (ch) => (ch === 10 ? questionsB : questionsA.filter((q) => q.chapter === ch));
+const chapterName = (ch) => (Number(ch) === 10 ? "科目B" : `第${ch}章 ${chapters[ch - 1].title}`);
+const reducedMotion = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
 // ---- 進捗の保存（localStorage、使えれば claude.ai の db にも） ----
-const normalize = (p) => ({ passed: p?.passed ?? {}, stats: p?.stats ?? {}, exams: p?.exams ?? [] });
+const normalize = (p) => ({
+  passed: p?.passed ?? {}, stats: p?.stats ?? {}, exams: p?.exams ?? [], days: p?.days ?? [], examDate: p?.examDate ?? null,
+});
 let progress = normalize(readLocal());
 let remote = null;
 let remoteChain = Promise.resolve();
@@ -4960,6 +5127,12 @@ async function connectRemote() {
   } catch { /* db が使えなければ localStorage のみ */ }
 }
 
+function record(q, correct) {
+  const today = localDate();
+  progress.stats = recordAnswer(progress.stats, q.id, correct, today);
+  progress.days = markDay(progress.days, today);
+}
+
 // ---- 画面状態 ----
 let view = { name: "home" };
 let timerId = null;
@@ -4973,11 +5146,17 @@ function go(next) {
 }
 
 function startSession(kind, title, questions, extra = {}) {
-  go({ name: "session", kind, title, questions, i: 0, answers: [], revealed: false, confirming: false, ...extra });
+  go({ name: "session", kind, title, questions, i: 0, answers: [], revealed: false, confirming: false, combo: 0, ...extra });
 }
 
 function startMock() {
-  startSession("mock", "模擬試験", buildMockExam(questionsA, questionsB), { deadline: Date.now() + MOCK_MINUTES * 60000 });
+  startSession("mock", "🏆 模擬試験", buildMockExam(questionsA, questionsB), { deadline: Date.now() + MOCK_MINUTES * 60000 });
+}
+
+const reviewQuestions = () => dueIds(progress.stats, localDate()).filter((id) => byId.has(id)).map((id) => byId.get(id));
+
+function startField(ch) {
+  startSession("practice", `${ICONS[ch]} ${ch === 10 ? "科目B演習" : `分野別演習: ${chapters[ch - 1].title}`}`, shuffle(poolOf(ch)));
 }
 
 // ---- 描画 ----
@@ -4989,78 +5168,123 @@ function render() {
 }
 
 function renderHome() {
-  const stats = Object.values(progress.stats);
-  const answered = stats.reduce((n, s) => n + s.c + s.w, 0);
-  const correct = stats.reduce((n, s) => n + s.c, 0);
-  const weak = weakIds(progress.stats).filter((id) => byId.has(id));
-  const doneCount = chapterIds.filter((id) => progress.passed[id]).length;
-  const last = progress.exams.at(-1);
+  const today = localDate();
+  const streak = streakDays(progress.days, today);
+  const doneToday = progress.days.includes(today);
+  const started = Object.keys(progress.stats).length > 0;
+  const review = reviewQuestions();
+  const p = predictScore(progress.stats, allQuestions);
+  const unanswered = allQuestions.filter((q) => !progress.stats[q.id]).length;
+  const plan = examPlan(progress.examDate, today, unanswered);
+  const gap = PASS_SCORE - p.score;
 
   app.innerHTML = `
-<header class="row" style="justify-content:space-between">
+<header class="hero-head">
   <div><div class="eyebrow">情報セキュリティマネジメント試験</div><h1>SG 合格トレーナー</h1></div>
+  <div class="streak ${doneToday ? "on" : ""}" title="連続学習日数"><span class="flame">🔥</span><b class="num">${streak}</b><small>日連続</small></div>
 </header>
-<section class="panel stats">
-  <div class="stat"><span class="muted">体系学習</span><b>${doneCount}<small> / ${chapterIds.length} 章</small></b></div>
-  <div class="stat"><span class="muted">解答数</span><b>${answered}</b></div>
-  <div class="stat"><span class="muted">正答率</span><b>${answered ? Math.round((correct / answered) * 100) : 0}<small>%</small></b></div>
-  <div class="stat"><span class="muted">直近の模擬試験</span><b>${last ? last.score : "—"}<small>${last ? " 点" : ""}</small></b></div>
+
+<section class="card meter-card pop-in">
+  <div class="row between"><span class="label">合格予測メーター</span><span class="muted small">目安</span></div>
+  <div class="big"><b class="num count" data-to="${p.score}">${p.score}</b><small> / 1000点</small></div>
+  <div class="meter"><i style="--w:${p.score / 10}%"></i><span class="line" title="合格ライン 600点"></span></div>
+  <p class="meter-msg">${gap > 0 ? `合格ラインまで <b>あと ${gap} 点</b>` : "🎉 <b>合格圏です！</b> このまま維持しよう"}</p>
+  ${p.focus ? `<button class="chip" data-field="${p.focus.chapter}">${ICONS[p.focus.chapter]} ${chapterName(p.focus.chapter)} を伸ばすと <b>+${p.focus.gain}点</b> →</button>` : ""}
 </section>
-<section class="panel">
-  <h2>1. 体系学習</h2>
-  <p class="muted">第1章から順に読み、確認テスト（${QUIZ_SIZE}問中${Math.ceil(QUIZ_SIZE * 0.8)}問以上で合格）で理解を確かめましょう。どの章からでも開けます。</p>
+
+<section class="card review-card pop-in" style="--d:.06s">
+  ${review.length
+    ? `<button class="cta" data-mode="review"><span class="cta-emoji">🔁</span><span class="cta-text"><b>今日の復習</b><small>${review.length}問 が復習日です</small></span><span class="go">GO!</span></button>`
+    : `<div class="done-msg"><span class="cta-emoji">${started ? "🎉" : "👋"}</span><div><b>${started ? "今日の復習はおわり！" : "まずは好きな章から解いてみよう"}</b>
+       <small class="muted">${started ? "新しい問題に挑戦すると、予測点がもっと上がります" : "解いた問題は、忘れかけた頃に「今日の復習」に出てきます"}</small></div></div>`}
+</section>
+
+<section class="card exam-card pop-in" style="--d:.12s">
+  <div class="row between">
+    <span class="label">📅 試験日</span>
+    <input type="date" id="examDate" value="${progress.examDate ?? ""}" aria-label="試験日">
+  </div>
+  ${plan ? (plan.daysLeft
+    ? `<p class="plan">試験まで <b class="num">あと ${plan.daysLeft} 日</b>。まだ解いていない ${unanswered}問 を終えるには <b class="num">1日 ${plan.perDay}問</b> ペース</p>`
+    : `<p class="plan">試験日です。がんばって！💪</p>`)
+    : `<p class="muted small">試験日を入れると、1日に解く問題数の目安を出します</p>`}
+</section>
+
+<section class="card">
+  <h2>📚 テキストと確認テスト</h2>
+  <p class="muted small">第1章から読むのがおすすめ。どの章からでも開けます。バーは章ごとの実力です。</p>
   <ol class="chapters">
-    ${chapters.map((c) => {
-      const pill = progress.passed[c.id] ? '<span class="pill done">合格</span>' : '<span class="pill open">未合格</span>';
-      return `<li><span class="no">${String(c.id).padStart(2, "0")}</span>
-        <button class="back" data-chapter="${c.id}">${c.title}</button>${pill}</li>`;
-    }).join("")}
+    ${chapters.map((c) => `<li>
+      <button class="ch" data-chapter="${c.id}">
+        <span class="ch-icon">${ICONS[c.id]}</span>
+        <span class="ch-body"><span class="ch-title">${c.id}. ${c.title}</span>
+          <span class="mini"><i style="--w:${Math.round(p.rates[c.id] * 100)}%"></i></span></span>
+        ${progress.passed[c.id] ? '<span class="badge">合格</span>' : ""}
+      </button></li>`).join("")}
   </ol>
 </section>
-<section class="panel">
-  <h2>2. 演習</h2>
+
+<section class="card">
+  <h2>🎯 演習</h2>
   <div class="modes">
-    <button class="mode primary" data-mode="mock"><b>模擬試験</b><span>科目A 48問 + 科目B 12問 / ${MOCK_MINUTES}分</span></button>
-    <button class="mode" data-mode="b"><b>科目B演習</b><span class="muted">事例問題 ${questionsB.length}問</span></button>
-    <button class="mode" data-mode="weak" ${weak.length ? "" : "disabled"}><b>弱点復習</b><span class="muted">${weak.length ? `${weak.length}問` : "弱点はまだありません"}</span></button>
+    <button class="mode mock" data-mode="mock"><span class="mode-emoji">🏆</span><b>模擬試験</b><small>科目A 48問 + 科目B 12問 / ${MOCK_MINUTES}分</small></button>
+    <button class="mode" data-field="10"><span class="mode-emoji">🧩</span><b>科目B演習</b><small>事例問題 ${questionsB.length}問</small></button>
   </div>
-  <p class="muted" style="margin-top:16px">分野別演習（科目A）</p>
-  <div class="row">
-    ${chapters.filter((c) => c.id <= 9).map((c) => `<button data-field="${c.id}" title="${c.title}">${c.id}. ${c.title}</button>`).join("")}
+  <p class="label" style="margin-top:16px">分野別演習（科目A）</p>
+  <div class="fields">
+    ${chapters.filter((c) => c.id <= 9).map((c) => `<button data-field="${c.id}" title="${c.title}">${ICONS[c.id]} ${c.title}</button>`).join("")}
   </div>
 </section>
-${progress.exams.length ? `<section class="panel"><h2>模擬試験の記録</h2>
+
+${progress.exams.length ? `<section class="card"><h2>🏆 模擬試験の記録</h2>
   <table class="result"><tr><th>日時</th><th>得点</th><th>判定</th></tr>
   ${progress.exams.slice().reverse().map((e) => `<tr><td>${new Date(e.date).toLocaleString("ja-JP")}</td><td class="r">${e.score}</td><td>${e.score >= PASS_SCORE ? "合格圏" : "不合格圏"}</td></tr>`).join("")}
   </table></section>` : ""}
-<p class="muted">問題・解説はシラバスの出題範囲に沿って作成したオリジナルです。得点は均等配点による目安で、本番（IRT方式）とは異なります。</p>`;
+<p class="muted small">問題・解説はシラバスの出題範囲に沿って作成したオリジナルです。予測点・得点は均等配点による目安で、本番（IRT方式）とは異なります。</p>`;
 
   app.querySelectorAll("[data-chapter]").forEach((b) => (b.onclick = () => go({ name: "chapter", id: Number(b.dataset.chapter) })));
-  app.querySelectorAll("[data-field]").forEach((b) => (b.onclick = () => {
-    const c = chapters[Number(b.dataset.field) - 1];
-    startSession("practice", `分野別演習: ${c.title}`, shuffle(poolOf(c.id)));
-  }));
+  app.querySelectorAll("[data-field]").forEach((b) => (b.onclick = () => startField(Number(b.dataset.field))));
   app.querySelector('[data-mode="mock"]').onclick = startMock;
-  app.querySelector('[data-mode="b"]').onclick = () => startSession("practice", "科目B演習", shuffle(questionsB));
-  app.querySelector('[data-mode="weak"]').onclick = () => startSession("practice", "弱点復習", shuffle(weak.map((id) => byId.get(id))));
+  const rv = app.querySelector('[data-mode="review"]');
+  if (rv) rv.onclick = () => startSession("review", "🔁 今日の復習", shuffle(reviewQuestions()));
+  app.querySelector("#examDate").onchange = (e) => {
+    progress.examDate = e.target.value || null;
+    save();
+    render();
+  };
+  countUp();
+}
+
+// 予測点を 0 から数え上げる演出
+function countUp() {
+  const el = app.querySelector(".count");
+  if (!el || reducedMotion()) return;
+  const to = Number(el.dataset.to);
+  const start = performance.now();
+  const step = (now) => {
+    const t = Math.min(1, (now - start) / 700);
+    el.textContent = Math.round(to * (1 - (1 - t) ** 3));
+    if (t < 1 && el.isConnected) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
 }
 
 function renderChapter() {
   const c = chapters[view.id - 1];
   app.innerHTML = `
 <button class="back" id="home">← ホーム</button>
-<article class="panel text">
-  <div class="eyebrow">第${c.id}章</div>
+<article class="card text">
+  <div class="eyebrow">${ICONS[c.id]} 第${c.id}章</div>
   <h1>${c.title}</h1>
-  <p class="goal"><b>この章のゴール:</b> ${c.goal}</p>
+  <p class="goal"><b>🎯 この章のゴール:</b> ${c.goal}</p>
   ${c.body}
 </article>
-<div class="row"><button class="primary" id="quiz">確認テストを受ける（${QUIZ_SIZE}問）</button>
-${progress.passed[c.id] ? '<span class="pill done">合格済み</span>' : ""}</div>`;
+<div class="row"><button class="primary" id="quiz">✏️ 確認テストを受ける（${QUIZ_SIZE}問）</button>
+${progress.passed[c.id] ? '<span class="badge">合格済み</span>' : ""}</div>`;
   wrapTables();
   app.querySelector("#home").onclick = () => go({ name: "home" });
   app.querySelector("#quiz").onclick = () =>
-    startSession("quiz", `第${c.id}章 確認テスト`, shuffle(poolOf(c.id)).slice(0, QUIZ_SIZE), { chapterId: c.id });
+    startSession("quiz", `${ICONS[c.id]} 第${c.id}章 確認テスト`, shuffle(poolOf(c.id)).slice(0, QUIZ_SIZE), { chapterId: c.id });
 }
 
 function questionHtml(q, picked, reveal) {
@@ -5084,36 +5308,37 @@ function renderSession() {
   const picked = s.answers[s.i] ?? null;
   const mock = s.kind === "mock";
   const reveal = !mock && s.revealed;
+  const ok = picked === q.answer;
   const answeredCount = s.answers.filter((a) => a != null).length;
 
   app.innerHTML = `
-<div class="row" style="justify-content:space-between">
+<div class="row between">
   <button class="back" id="quit">← 中断してホームへ</button>
-  ${mock ? '<span class="timer" id="timer"></span>' : ""}
+  ${mock ? '<span class="timer" id="timer"></span>' : s.combo >= 2 ? `<span class="combo">🔥 ${s.combo} コンボ!</span>` : ""}
 </div>
-<section class="panel">
-  <div class="row" style="justify-content:space-between">
-    <span class="eyebrow">${s.title}</span>
+<section class="card qcard">
+  <div class="row between">
+    <span class="label">${s.title}</span>
     <span class="num muted">${s.i + 1} / ${s.questions.length}</span>
   </div>
-  <div class="bar" style="margin:8px 0 16px"><i style="width:${((s.i + 1) / s.questions.length) * 100}%"></i></div>
-  <div class="eyebrow">${q.chapter === 10 ? "科目B" : `科目A ・ 第${q.chapter}章`}</div>
+  <div class="bar"><i style="--w:${((s.i + 1) / s.questions.length) * 100}%"></i></div>
+  <div class="eyebrow">${q.chapter === 10 ? "🧩 科目B" : `${ICONS[q.chapter]} 科目A ・ 第${q.chapter}章`}</div>
   ${questionHtml(q, picked, reveal)}
-  ${reveal ? `<div class="explain">
-    <div class="verdict ${picked === q.answer ? "ok" : "ng"}">${picked === q.answer ? "正解" : `不正解（正解は ${LABELS[q.answer]}）`}</div>
+  ${reveal ? `<div class="explain ${ok ? "ok" : "ng"}">
+    <div class="verdict ${ok ? "ok" : "ng"}">${ok ? "⭕ 正解！" : `❌ 不正解（正解は ${LABELS[q.answer]}）`}</div>
     <p>${q.explanation}</p></div>` : ""}
 </section>
 <div class="row">
   ${mock ? `<button id="prev" ${s.i === 0 ? "disabled" : ""}>前の問題</button>
             <button id="next" ${s.i === s.questions.length - 1 ? "disabled" : ""}>次の問題</button>
             <button class="primary" id="finish">試験を終了する</button>`
-    : reveal ? `<button class="primary" id="next">${s.i === s.questions.length - 1 ? "結果を見る" : "次の問題"}</button>` : ""}
+    : reveal ? `<button class="primary next" id="next">${s.i === s.questions.length - 1 ? "結果を見る 🎊" : "次の問題 →"}</button>` : ""}
 </div>
-${mock ? `<section class="panel">
+${mock ? `<section class="card">
   <div class="muted">解答済み ${answeredCount} / ${s.questions.length}</div>
-  <div class="grid" style="margin-top:8px">${s.questions.map((_, k) =>
+  <div class="grid">${s.questions.map((_, k) =>
     `<button data-jump="${k}" class="${s.answers[k] != null ? "ans" : ""} ${k === s.i ? "cur" : ""}">${k + 1}</button>`).join("")}</div>
-  ${s.confirming ? `<div class="confirm" style="margin-top:12px"><p>未解答が ${s.questions.length - answeredCount} 問あります。試験を終了して採点しますか？</p>
+  ${s.confirming ? `<div class="confirm"><p>未解答が ${s.questions.length - answeredCount} 問あります。試験を終了して採点しますか？</p>
     <div class="row"><button class="primary" id="yes">終了して採点する</button><button id="no">試験に戻る</button></div></div>` : ""}
 </section>` : ""}`;
   wrapTables();
@@ -5139,7 +5364,23 @@ ${mock ? `<section class="panel">
       if (s.i === s.questions.length - 1) finishSession();
       else { s.i++; s.revealed = false; render(); window.scrollTo(0, 0); }
     };
+    if (s.justAnswered) {
+      s.justAnswered = false;
+      if (ok) burst(app.querySelector(".choice.correct"));
+      app.querySelector(".explain").scrollIntoView({ block: "nearest", behavior: reducedMotion() ? "auto" : "smooth" });
+    }
   }
+}
+
+// 正解の選択肢から絵文字が飛び散る演出（表示が終わったら要素を消す）
+function burst(target) {
+  if (!target || reducedMotion()) return;
+  const box = document.createElement("span");
+  box.className = "burst";
+  box.innerHTML = ["✨", "🎉", "⭐", "💮", "✨", "🌟", "🎊", "⭐"]
+    .map((e, k) => `<i style="--a:${k * 45}deg">${e}</i>`).join("");
+  target.append(box);
+  setTimeout(() => box.remove(), 900);
 }
 
 function tick() {
@@ -5147,7 +5388,7 @@ function tick() {
   const el = document.getElementById("timer");
   if (el) {
     const m = Math.floor(left / 60000);
-    el.textContent = `残り ${m}:${String(Math.floor((left % 60000) / 1000)).padStart(2, "0")}`;
+    el.textContent = `⏱ 残り ${m}:${String(Math.floor((left % 60000) / 1000)).padStart(2, "0")}`;
   }
   if (left === 0) finishSession();
 }
@@ -5163,8 +5404,12 @@ function pick(k) {
   const s = view;
   s.answers[s.i] = k;
   if (s.kind === "mock") { render(); return; }
+  const q = s.questions[s.i];
+  const ok = k === q.answer;
   s.revealed = true;
-  progress.stats = recordAnswer(progress.stats, s.questions[s.i].id, k === s.questions[s.i].answer);
+  s.justAnswered = true;
+  s.combo = ok ? s.combo + 1 : 0;
+  record(q, ok);
   save();
   render();
 }
@@ -5174,7 +5419,7 @@ function finishSession() {
   const answers = s.questions.map((_, k) => s.answers[k] ?? null);
   const result = scoreExam(s.questions, answers);
   if (s.kind === "mock") {
-    s.questions.forEach((q, k) => (progress.stats = recordAnswer(progress.stats, q.id, answers[k] === q.answer)));
+    s.questions.forEach((q, k) => record(q, answers[k] === q.answer));
     progress.exams = [...progress.exams, { date: new Date().toISOString(), score: result.score }].slice(-MAX_EXAMS);
   }
   if (s.kind === "quiz" && isQuizPassed(result.correct, result.total)) progress.passed[s.chapterId] = true;
@@ -5185,30 +5430,33 @@ function finishSession() {
 function renderResult() {
   const { session: s, answers, result: r } = view;
   const wrong = s.questions.map((q, k) => ({ q, a: answers[k] })).filter((x) => x.a !== x.q.answer);
+  const rate = Math.round((r.correct / r.total) * 100);
   let headline;
   if (s.kind === "quiz") {
     const ok = isQuizPassed(r.correct, r.total);
-    headline = `<div class="verdict ${ok ? "ok" : "ng"}">${ok ? "合格です。次の章に進めます。" : "不合格です。テキストを復習して再挑戦しましょう。"}</div>`;
+    headline = `<div class="result-emoji">${ok ? "🎉" : "💪"}</div><div class="verdict ${ok ? "ok" : "ng"}">${ok ? "合格！ この章はクリアです" : "あと少し！ テキストを見直して再挑戦しよう"}</div>`;
   } else if (s.kind === "mock") {
-    headline = `<div class="score">${r.score}<small style="font-size:1rem"> / 1000点</small></div>
-      <div class="verdict ${r.passed ? "ok" : "ng"}">${r.passed ? "合格圏（600点以上）" : "不合格圏（合格目安は600点）"}</div>`;
-  } else headline = "";
+    headline = `<div class="result-emoji">${r.passed ? "🏆" : "📈"}</div><div class="score num">${r.score}<small> / 1000点</small></div>
+      <div class="verdict ${r.passed ? "ok" : "ng"}">${r.passed ? "合格圏（600点以上）！" : "合格目安は600点。弱い分野を伸ばそう"}</div>`;
+  } else {
+    headline = `<div class="result-emoji">${rate >= 80 ? "🌟" : rate >= 60 ? "👍" : "💪"}</div><div class="verdict">${rate >= 80 ? "すばらしい！" : rate >= 60 ? "いい調子！" : "間違えた問題は、明日の復習に出てきます"}</div>`;
+  }
 
   app.innerHTML = `
 <button class="back" id="home">← ホーム</button>
-<section class="panel">
-  <div class="eyebrow">${s.title} の結果</div>
+<section class="card result-card pop-in">
+  <div class="label">${s.title} の結果</div>
   ${headline}
-  <p class="num">${r.correct} / ${r.total} 問正解（${Math.round((r.correct / r.total) * 100)}%）</p>
+  <p class="num">${r.correct} / ${r.total} 問正解（${rate}%）</p>
   ${s.kind === "mock" ? `<div class="tablewrap"><table class="result"><tr><th>分野</th><th>正解</th><th>正答率</th></tr>
-    ${Object.entries(r.byChapter).map(([ch, b]) => `<tr><td>${ch === "10" ? "科目B" : `第${ch}章 ${chapters[ch - 1].title}`}</td>
+    ${Object.entries(r.byChapter).map(([ch, b]) => `<tr><td>${ICONS[ch]} ${chapterName(ch)}</td>
       <td class="r">${b.correct}/${b.total}</td><td class="r">${Math.round((b.correct / b.total) * 100)}%</td></tr>`).join("")}
   </table></div>` : ""}
 </section>
-${wrong.length ? `<section class="panel"><h2>間違えた問題（${wrong.length}問）</h2>
-  <p class="muted">「弱点復習」でもう一度出題されます。</p>
-  ${wrong.map(({ q, a }) => `<details style="border-top:1px solid var(--line);padding:8px 0">
-    <summary>${q.chapter === 10 ? "科目B" : `第${q.chapter}章`}: ${q.question.replace(/<[^>]+>/g, " ").slice(0, 60)}…</summary>
+${wrong.length ? `<section class="card"><h2>間違えた問題（${wrong.length}問）</h2>
+  <p class="muted small">明日の「今日の復習」にもう一度出てきます。</p>
+  ${wrong.map(({ q, a }) => `<details>
+    <summary>${q.chapter === 10 ? "🧩 科目B" : `${ICONS[q.chapter]} 第${q.chapter}章`}: ${q.question.replace(/<[^>]+>/g, " ").slice(0, 60)}…</summary>
     ${questionHtml(q, a, true)}
     <div class="explain"><p>あなたの解答: ${a == null ? "未解答" : LABELS[a]} / 正解: ${LABELS[q.answer]}</p><p>${q.explanation}</p></div>
   </details>`).join("")}</section>` : ""}
