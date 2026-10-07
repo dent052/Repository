@@ -21,3 +21,9 @@ test("1ファイル版のスクリプトは構文として正しく、問題デ�
 test("dist/sg-trainer.html は最新のビルド結果である", () => {
   assert.equal(readFileSync(new URL("../dist/sg-trainer.html", import.meta.url), "utf8"), html);
 });
+
+test("1ファイル版にはアイコンが data URI で埋め込まれている", () => {
+  for (const rel of ["icon", "apple-touch-icon"]) {
+    assert.match(html, new RegExp(`<link rel="${rel}"[^>]*href="data:image/png;base64,[A-Za-z0-9+/=]{100,}"`));
+  }
+});

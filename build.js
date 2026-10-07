@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 const read = (path) => readFileSync(new URL(`web/${path}`, import.meta.url), "utf8");
+const icon = () => `data:image/png;base64,${readFileSync(new URL("web/icon-192.png", import.meta.url)).toString("base64")}`;
 const ORDER = ["core.js", "data/chapters.js", "data/questions-a.js", "data/questions-b.js", "app.js"];
 
 export function bundle() {
@@ -11,7 +12,7 @@ export function bundle() {
       .replace(/^import[\s\S]*?from\s+"[^"]+";\n/gm, "")
       .replace(/^export /gm, ""),
   ).join("\n");
-  return read("index.html").replace(
+  return read("index.html").replaceAll('href="icon-192.png"', `href="${icon()}"`).replace(
     /<script type="module" src="app.js"><\/script>/,
     () => `<script>\n${script.replaceAll("</script", "<\\/script")}</script>`,
   );

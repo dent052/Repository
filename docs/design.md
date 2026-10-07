@@ -170,6 +170,7 @@
 
 ```
 web/index.html        画面
+web/icon.svg, web/icon-192.png  アプリのアイコン
 web/app.js            画面制御（DOM 操作、保存）
 web/core.js           純粋関数（採点、弱点抽出、模擬試験の組み立て）
 web/data/chapters.js  学習テキスト
@@ -177,7 +178,7 @@ web/data/questions-a.js  科目A問題
 web/data/questions-b.js  科目B問題
 test/                 node:test によるテスト（ロジックとデータ整合性）
 server.js             ローカル配信用の最小 HTTP サーバー
-build.js              1ファイル版を作るスクリプト（web/ を dist/sg-trainer.html にまとめる）
+build.js              1ファイル版を作るスクリプト（web/ を dist/sg-trainer.html にまとめる。アイコンも埋め込む）
 dist/sg-trainer.html  1ファイル版（ビルド結果。リポジトリに含める）
 ```
 
@@ -187,3 +188,9 @@ dist/sg-trainer.html  1ファイル版（ビルド結果。リポジトリに含
 - ES モジュールはローカルファイル（file://）から読み込めないため、`import` / `export` を取り除いて1つの通常の `<script>` に連結する。連結順は core.js → data → app.js。
 - このファイルをスマートフォンや PC に保存すれば、サーバーなしでブラウザで直接開け、オフラインでも使える（Webフォントだけはオンライン時のみ。オフラインでは端末のフォントで表示する）。
 - 進捗はそのブラウザの localStorage に保存する。claude.ai の Artifact もこの1ファイル版を公開する。
+
+## アイコン
+
+- アプリのアイコンは `web/icon.svg`（紫からピンクのグラデーションに、白い盾とチェックマーク）。ホーム画面に置いたときに文字だけのアイコンにならないようにする。
+- `web/icon-192.png` は icon.svg から作った 192×192 の PNG。`<link rel="icon">` と `<link rel="apple-touch-icon">` で参照する。
+- 1ファイル版では、この PNG を data URI として HTML に埋め込む（外部ファイルなしでアイコンが付く）。
