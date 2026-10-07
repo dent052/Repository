@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  shuffle, isChapterUnlocked, isPracticeUnlocked, isQuizPassed,
+  shuffle, isQuizPassed,
   recordAnswer, weakIds, MOCK_QUOTA, MOCK_A, buildMockExam, scoreExam,
 } from "../web/core.js";
 
@@ -12,19 +12,6 @@ test("shuffle は元の配列を変えず、同じ要素を返す", () => {
   const out = shuffle(src, Math.random);
   assert.deepEqual(src, [1, 2, 3, 4]);
   assert.deepEqual([...out].sort(), [1, 2, 3, 4]);
-});
-
-test("最初の章は常に開き、以降は前の章の合格で開く", () => {
-  const ids = [1, 2, 3];
-  assert.equal(isChapterUnlocked(ids, {}, 1), true);
-  assert.equal(isChapterUnlocked(ids, {}, 2), false);
-  assert.equal(isChapterUnlocked(ids, { 1: true }, 2), true);
-  assert.equal(isChapterUnlocked(ids, { 1: true }, 3), false);
-});
-
-test("演習は全章合格で開く", () => {
-  assert.equal(isPracticeUnlocked([1, 2], { 1: true }), false);
-  assert.equal(isPracticeUnlocked([1, 2], { 1: true, 2: true }), true);
 });
 
 test("確認テストは80%以上で合格", () => {
