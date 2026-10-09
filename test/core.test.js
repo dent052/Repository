@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import {
   shuffle, isQuizPassed,
   recordAnswer, MOCK_QUOTA, MOCK_A, buildMockExam, scoreExam,
-  addDays, dueIds, predictScore, streakDays, markDay, examPlan,
+  addDays, dueIds, predictScore, streakDays, markDay, examPlan, findTerms,
 } from "../web/core.js";
 
 const fixedRng = () => 0;
@@ -127,4 +127,29 @@ test("scoreExam は1000点換算で600点以上を合格とし、章別に集計
   assert.equal(r.score, 600);
   assert.equal(r.passed, true);
   assert.deepEqual(r.byChapter, { 1: { correct: 2, total: 2 }, 2: { correct: 1, total: 3 } });
+});
+
+test("findTerms は長い用語を優先し、各用語の最初の1か所だけを重ならずに返す", () => {
+  const terms = ["DNS", "DNSキャッシュポイズニング", "キャッシュ"];
+  const text = "DNSキャッシュポイズニングはDNSのキャッシュを汚す。DNSは名前解決。";
+  assert.deepEqual(findTerms(text, terms).map((m) => [m.term, m.start]), [
+    ["DNSキャッシュポイズニング", 0],
+    ["DNS", 15],
+    ["キャッシュ", 19],
+  ]);
+});
+
+test("findTerms は英字の用語を、前後が英字のときは拾わない", () => {
+  assert.deepEqual(findTerms("IPsec と IPS", ["IPS"]).map((m) => m.start), [8]);
+  assert.deepEqual(findTerms("IDS/IPS", ["IDS", "IPS"]).map((m) => m.term), ["IDS", "IPS"]);
+});
+
+test("findTerms は skip に含まれる用語を拾わない", () => {
+  assert.deepEqual(findTerms("SPF と DKIM", ["SPF", "DKIM"], new Set(["SPF"])).map((m) => m.term), ["DKIM"]);
+});
+
+test("findTerms はカタカナの用語を、前後がカタカナのときは拾わない", () => {
+  assert.deepEqual(findTerms("プログラムのログ", ["ログ"]).map((m) => m.start), [6]);
+  assert.deepEqual(findTerms("キャッシュサーバ", ["キャッシュ"]), []);
+  assert.deepEqual(findTerms("ログを取る", ["ログ"]).map((m) => m.start), [0]);
 });

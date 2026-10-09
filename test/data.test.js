@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { chapters } from "../web/data/chapters.js";
 import { questionsA } from "../web/data/questions-a.js";
 import { questionsB } from "../web/data/questions-b.js";
+import { glossary } from "../web/data/glossary.js";
 import { MOCK_A, MOCK_B, MOCK_QUOTA } from "../web/core.js";
 
 const all = [...questionsA, ...questionsB];
@@ -90,4 +91,30 @@ test("正解の位置が偏らない（科目A）", () => {
   const counts = [0, 0, 0, 0];
   for (const q of questionsA) counts[q.answer]++;
   for (const n of counts) assert.ok(n >= questionsA.length * 0.15, `正解位置の分布: ${counts}`);
+});
+
+test("テキストは用語を並べただけにしない（太字には一言の説明を付ける）", () => {
+  const bare = [];
+  for (const c of chapters) {
+    for (const m of c.body.matchAll(/<(li|p)>([\s\S]*?)<\/\1>/g)) {
+      const inner = m[2].replace(/<(ul|ol)>[\s\S]*$/, "");
+      const terms = [...inner.matchAll(/<b>([^<]*)<\/b>/g)].map((x) => x[1]);
+      const text = inner.replace(/<[^>]+>/g, "");
+      if (terms.length >= 3 && terms.join("").length / text.length > 0.45) bare.push(`第${c.id}章: ${text.slice(0, 40)}`);
+    }
+  }
+  assert.deepEqual(bare, []);
+});
+
+test("用語集は一意で、80字以内の説明と章を持ち、テキストか解説に登場する", () => {
+  const terms = glossary.map((g) => g.term);
+  assert.equal(new Set(terms).size, terms.length);
+  const plain = (s) => s.replace(/<[^>]+>/g, "").replaceAll("&amp;", "&");
+  const corpus = [...chapters.map((c) => plain(c.body)), ...all.map((q) => plain(q.explanation))].join("\n");
+  for (const g of glossary) {
+    assert.ok(g.desc.length >= 10 && g.desc.length <= 80, `${g.term}: 説明の長さ ${g.desc.length}`);
+    assert.ok(g.ch >= 1 && g.ch <= 10, g.term);
+    assert.ok(corpus.includes(g.term), `${g.term} がどこにも出てこない`);
+  }
+  assert.ok(glossary.length >= 150, `用語集が ${glossary.length} 語しかない`);
 });

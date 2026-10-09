@@ -22,7 +22,7 @@ test("index.html は manifest を参照し、Service Worker が保存するフ�
   assert.match(readFileSync(web("index.html"), "utf8"), /<link rel="manifest" href="manifest.webmanifest">/);
   const files = JSON.parse(readFileSync(web("sw.js"), "utf8").match(/const FILES = (\[[\s\S]*?\]);/)[1]);
   for (const f of files.filter((f) => f !== "./")) assert.ok(existsSync(web(f)), f);
-  for (const f of ["index.html", "app.js", "core.js", "data/chapters.js", "data/questions-a.js", "data/questions-b.js"]) {
+  for (const f of ["index.html", "app.js", "core.js", "data/chapters.js", "data/questions-a.js", "data/questions-b.js", "data/glossary.js"]) {
     assert.ok(files.includes(f), f);
   }
 });

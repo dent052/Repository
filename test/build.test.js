@@ -13,7 +13,7 @@ test("1ファイル版は外部の JS を読み込まず、import / export を�
 
 test("1ファイル版のスクリプトは構文として正しく、問題データを含む", () => {
   assert.doesNotThrow(() => new Function(script));
-  for (const name of ["const chapters", "const questionsA", "const questionsB", "function buildMockExam"]) {
+  for (const name of ["const chapters", "const questionsA", "const questionsB", "const glossary", "function buildMockExam"]) {
     assert.ok(script.includes(name), name);
   }
 });

@@ -1,9 +1,10 @@
 import { chapters } from "./data/chapters.js";
 import { questionsA } from "./data/questions-a.js";
 import { questionsB } from "./data/questions-b.js";
+import { glossary } from "./data/glossary.js";
 import {
   QUIZ_SIZE, MOCK_MINUTES, PASS_SCORE, shuffle, isQuizPassed, recordAnswer, buildMockExam, scoreExam,
-  localDate, dueIds, predictScore, streakDays, markDay, examPlan,
+  localDate, dueIds, predictScore, streakDays, markDay, examPlan, findTerms,
 } from "./core.js";
 
 const LABELS = "アイウエオカキクケコ";
@@ -15,6 +16,8 @@ const allQuestions = [...questionsA, ...questionsB];
 const byId = new Map(allQuestions.map((q) => [q.id, q]));
 const poolOf = (ch) => (ch === 10 ? questionsB : questionsA.filter((q) => q.chapter === ch));
 const chapterName = (ch) => (Number(ch) === 10 ? "科目B" : `第${ch}章 ${chapters[ch - 1].title}`);
+const TERMS = glossary.map((g) => g.term);
+const byTerm = new Map(glossary.map((g) => [g.term, g]));
 const reducedMotion = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
 // ---- 進捗の保存（localStorage、使えれば claude.ai の db にも） ----
@@ -212,6 +215,10 @@ function renderChapter() {
 <div class="row"><button class="primary" id="quiz">✏️ 確認テストを受ける（${QUIZ_SIZE}問）</button>
 ${progress.passed[c.id] ? '<span class="badge">合格済み</span>' : ""}</div>`;
   wrapTables();
+  const text = app.querySelector(".text");
+  // この章で太字にして説明している用語は、そばに説明があるので下線を付けない
+  const bold = [...text.querySelectorAll("b")].map((b) => b.textContent);
+  linkTerms(text, new Set(TERMS.filter((t) => bold.some((b) => b.includes(t)))));
   app.querySelector("#home").onclick = () => go({ name: "home" });
   app.querySelector("#quiz").onclick = () =>
     startSession("quiz", `${ICONS[c.id]} 第${c.id}章 確認テスト`, shuffle(poolOf(c.id)).slice(0, QUIZ_SIZE), { chapterId: c.id });
@@ -272,6 +279,7 @@ ${mock ? `<section class="card">
     <div class="row"><button class="primary" id="yes">終了して採点する</button><button id="no">試験に戻る</button></div></div>` : ""}
 </section>` : ""}`;
   wrapTables();
+  app.querySelectorAll(".explain").forEach((e) => linkTerms(e));
 
   app.querySelector("#quit").onclick = () => go({ name: "home" });
   app.querySelectorAll("[data-pick]").forEach((b) => (b.onclick = () => pick(Number(b.dataset.pick))));
@@ -395,6 +403,7 @@ ${wrong.length ? `<section class="card"><h2>間違えた問題（${wrong.length}
   <button id="home2">ホームへ</button>
 </div>`;
   wrapTables();
+  app.querySelectorAll(".explain").forEach((e) => linkTerms(e));
   app.querySelector("#home").onclick = app.querySelector("#home2").onclick = () => go({ name: "home" });
   const again = app.querySelector("#again");
   if (again) again.onclick = () => go({ name: "chapter", id: s.chapterId });
@@ -410,6 +419,53 @@ function wrapTables() {
     w.append(t);
   });
 }
+
+// 用語集にある語に下線を付け、タップで意味を出せるようにする（各用語は最初の1か所だけ）
+function linkTerms(root, skip = new Set()) {
+  const used = new Set(skip);
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode: (n) => (n.parentElement.closest("b, h1, h2, h3, th, tr > td:first-child, button, summary") ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT),
+  });
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  for (const node of nodes) {
+    const found = findTerms(node.data, TERMS, used);
+    if (!found.length) continue;
+    const frag = document.createDocumentFragment();
+    let pos = 0;
+    for (const { term, start, end } of found) {
+      used.add(term);
+      frag.append(node.data.slice(pos, start));
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "term";
+      b.dataset.term = term;
+      b.textContent = node.data.slice(start, end);
+      frag.append(b);
+      pos = end;
+    }
+    frag.append(node.data.slice(pos));
+    node.replaceWith(frag);
+  }
+}
+
+// 用語の意味を画面下に表示する。外側をタップするか閉じるボタンで消す
+const sheet = document.createElement("div");
+sheet.className = "sheet";
+sheet.hidden = true;
+document.body.append(sheet);
+document.addEventListener("click", (e) => {
+  const t = e.target.closest?.(".term");
+  if (t) {
+    const g = byTerm.get(t.dataset.term);
+    sheet.innerHTML = `<div class="sheet-head"><b>${g.term}</b><button type="button" class="sheet-close" aria-label="閉じる">✕</button></div>
+      <p>${g.desc}</p><small class="muted">📖 ${chapterName(g.ch)}</small>`;
+    sheet.hidden = false;
+  } else if (!sheet.hidden && (!sheet.contains(e.target) || e.target.closest(".sheet-close"))) {
+    sheet.hidden = true;
+  }
+});
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") sheet.hidden = true; });
 
 render();
 connectRemote();

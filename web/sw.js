@@ -2,7 +2,7 @@
 const CACHE = "sg-trainer";
 const FILES = [
   "./", "index.html", "app.js", "core.js",
-  "data/chapters.js", "data/questions-a.js", "data/questions-b.js",
+  "data/chapters.js", "data/questions-a.js", "data/questions-b.js", "data/glossary.js",
   "manifest.webmanifest", "icon-192.png", "icon-512.png"
 ];
 
