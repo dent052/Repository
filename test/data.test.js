@@ -53,7 +53,7 @@ test("確認テストと模擬試験に必要な問題数がある", () => {
     assert.ok(n >= MOCK_QUOTA[ch] * 3, `章${ch} は模擬試験3回分に足りない`);
   }
   assert.ok(questionsA.length >= 400, `科目A は ${questionsA.length} 問しかない`);
-  assert.ok(questionsB.length >= MOCK_B * 4, `科目B は ${questionsB.length} 問しかない`);
+  assert.ok(questionsB.length >= MOCK_B * 8, `科目B は ${questionsB.length} 問しかない`);
 });
 
 test("科目B の事例文は本番並みの長さ（タグを除いて800〜1,500字）", () => {
