@@ -56,6 +56,13 @@ test("確認テストと模擬試験に必要な問題数がある", () => {
   assert.ok(questionsB.length >= MOCK_B * 4, `科目B は ${questionsB.length} 問しかない`);
 });
 
+test("科目B の事例文は本番並みの長さ（タグを除いて800〜1,500字）", () => {
+  for (const q of questionsB) {
+    const n = q.scenario.replace(/<[^>]+>/g, "").replace(/\s+/g, "").length;
+    assert.ok(n >= 800 && n <= 1500, `${q.id} の事例文は ${n} 字`);
+  }
+});
+
 test("科目B には本番と同じ10択（解答群から組合せを選ぶ）問題がある", () => {
   const n = questionsB.filter((q) => q.choices.length === 10).length;
   assert.ok(n >= 6, `10択の科目B問題が ${n} 問しかない`);
