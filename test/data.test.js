@@ -4,7 +4,7 @@ import { chapters } from "../web/data/chapters.js";
 import { questionsA } from "../web/data/questions-a.js";
 import { questionsB } from "../web/data/questions-b.js";
 import { glossary } from "../web/data/glossary.js";
-import { MOCK_A, MOCK_B, MOCK_QUOTA } from "../web/core.js";
+import { MOCK_B, MOCK_QUOTA } from "../web/core.js";
 
 const all = [...questionsA, ...questionsB];
 
@@ -52,8 +52,8 @@ test("確認テストと模擬試験に必要な問題数がある", () => {
     assert.ok(n >= 30, `章${ch} は ${n} 問しかない`);
     assert.ok(n >= MOCK_QUOTA[ch] * 3, `章${ch} は模擬試験3回分に足りない`);
   }
-  assert.ok(questionsA.length >= MOCK_A * 3);
-  assert.ok(questionsB.length >= MOCK_B * 3, `科目B は ${questionsB.length} 問しかない`);
+  assert.ok(questionsA.length >= 400, `科目A は ${questionsA.length} 問しかない`);
+  assert.ok(questionsB.length >= MOCK_B * 4, `科目B は ${questionsB.length} 問しかない`);
 });
 
 test("科目B には本番と同じ10択（解答群から組合せを選ぶ）問題がある", () => {
