@@ -127,3 +127,25 @@ export function scoreExam(questions, answers) {
   const score = Math.round((correct / questions.length) * 1000);
   return { correct, total: questions.length, score, passed: score >= PASS_SCORE, byChapter };
 }
+
+// ---- 用語集の照合 ----
+// text 中の用語を、長い用語を優先して重ならないように探す。各用語は最初の1か所だけ。
+// 英字・カタカナの用語は、前後が同じ種類の文字のときは拾わない（"IPsec" の中の "IPS"、「プログラム」の中の「ログ」）。
+export function findTerms(text, terms, skip = new Set()) {
+  const kind = (ch) => (/[A-Za-z]/.test(ch ?? "") ? "alpha" : /[ァ-ヶー]/.test(ch ?? "") ? "kana" : null);
+  const taken = [];
+  const found = [];
+  for (const term of [...terms].sort((a, b) => b.length - a.length)) {
+    if (skip.has(term)) continue;
+    for (let i = text.indexOf(term); i !== -1; i = text.indexOf(term, i + 1)) {
+      const end = i + term.length;
+      if (kind(term[0]) && kind(term[0]) === kind(text[i - 1])) continue;
+      if (kind(term.at(-1)) && kind(term.at(-1)) === kind(text[end])) continue;
+      if (taken.some(([s, e]) => i < e && s < end)) continue;
+      taken.push([i, end]);
+      found.push({ term, start: i, end });
+      break;
+    }
+  }
+  return found.sort((a, b) => a.start - b.start);
+}
