@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import {
   shuffle, isQuizPassed,
   recordAnswer, MOCK_QUOTA, MOCK_A, buildMockExam, scoreExam,
-  addDays, dueIds, predictScore, streakDays, markDay, examPlan, findTerms,
+  addDays, dueIds, predictScore, streakDays, markDay, examPlan, findTerms, markUnsure,
 } from "../web/core.js";
 
 const fixedRng = () => 0;
@@ -103,8 +103,8 @@ test("模擬試験の科目A配分は本番の内訳（セキュリティ30・�
   assert.equal(sum([8, 9]), 14);
 });
 
-test("buildMockExam は科目A 48問 + 科目B 12問を重複なく組む", () => {
-  const qa = Array.from({ length: 108 }, (_, i) => ({ id: `a${i}`, chapter: (i % 9) + 1 }));
+test("buildMockExam は本番レベルの科目A 48問 + 科目B 12問を重複なく組む", () => {
+  const qa = Array.from({ length: 216 }, (_, i) => ({ id: `a${i}`, chapter: (i % 9) + 1, level: i < 108 ? "exam" : "basic" }));
   const qb = Array.from({ length: 15 }, (_, i) => ({ id: `b${i}`, chapter: 10 }));
   const exam = buildMockExam(qa, qb, fixedRng);
   assert.equal(exam.length, 60);
@@ -114,6 +114,7 @@ test("buildMockExam は科目A 48問 + 科目B 12問を重複なく組む", () =
   for (let ch = 1; ch <= 9; ch++) {
     assert.equal(exam.filter((q) => q.chapter === ch).length, MOCK_QUOTA[ch], `章${ch}`);
   }
+  assert.ok(exam.slice(0, 48).every((q) => q.level === "exam"));
 });
 
 test("scoreExam は1000点換算で600点以上を合格とし、章別に集計する", () => {
@@ -152,4 +153,11 @@ test("findTerms はカタカナの用語を、前後がカタカナのときは�
   assert.deepEqual(findTerms("プログラムのログ", ["ログ"]).map((m) => m.start), [6]);
   assert.deepEqual(findTerms("キャッシュサーバ", ["キャッシュ"]), []);
   assert.deepEqual(findTerms("ログを取る", ["ログ"]).map((m) => m.start), [0]);
+});
+
+test("markUnsure は正解の記録を残したまま、習熟段階を0に戻して翌日の復習に入れる", () => {
+  const s1 = recordAnswer(recordAnswer({}, "q", true, "2026-10-07"), "q", true, "2026-10-08");
+  const s2 = markUnsure(s1, "q", "2026-10-08");
+  assert.deepEqual(s2.q, { c: 2, w: 0, last: true, box: 0, due: "2026-10-09" });
+  assert.equal(s1.q.box, 2);
 });

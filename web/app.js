@@ -4,7 +4,7 @@ import { questionsB } from "./data/questions-b.js";
 import { glossary } from "./data/glossary.js";
 import {
   QUIZ_SIZE, MOCK_MINUTES, PASS_SCORE, shuffle, isQuizPassed, recordAnswer, buildMockExam, scoreExam,
-  localDate, dueIds, predictScore, streakDays, markDay, examPlan, findTerms,
+  localDate, dueIds, predictScore, streakDays, markDay, examPlan, findTerms, markUnsure,
 } from "./core.js";
 
 const LABELS = "アイウエオカキクケコ";
@@ -13,6 +13,7 @@ const KEY = "sg-trainer-progress";
 const MAX_EXAMS = 20;
 const app = document.getElementById("app");
 const allQuestions = [...questionsA, ...questionsB];
+const examQuestions = [...questionsA.filter((q) => q.level === "exam"), ...questionsB]; // 予測点に使う本番レベルの問題
 const byId = new Map(allQuestions.map((q) => [q.id, q]));
 const poolOf = (ch) => (ch === 10 ? questionsB : questionsA.filter((q) => q.chapter === ch));
 const chapterName = (ch) => (Number(ch) === 10 ? "科目B" : `第${ch}章 ${chapters[ch - 1].title}`);
@@ -106,7 +107,7 @@ function renderHome() {
   const doneToday = progress.days.includes(today);
   const started = Object.keys(progress.stats).length > 0;
   const review = reviewQuestions();
-  const p = predictScore(progress.stats, allQuestions);
+  const p = predictScore(progress.stats, examQuestions);
   const unanswered = allQuestions.filter((q) => !progress.stats[q.id]).length;
   const plan = examPlan(progress.examDate, today, unanswered);
   const gap = PASS_SCORE - p.score;
@@ -259,7 +260,7 @@ function renderSession() {
     <span class="num muted">${s.i + 1} / ${s.questions.length}</span>
   </div>
   <div class="bar"><i style="--w:${((s.i + 1) / s.questions.length) * 100}%"></i></div>
-  <div class="eyebrow">${q.chapter === 10 ? "🧩 科目B" : `${ICONS[q.chapter]} 科目A ・ 第${q.chapter}章`}</div>
+  <div class="eyebrow">${q.chapter === 10 ? "🧩 科目B" : `${ICONS[q.chapter]} 科目A ・ 第${q.chapter}章`}${q.level === "basic" ? ' <span class="lv">基礎</span>' : ""}</div>
   ${questionHtml(q, picked, reveal)}
   ${reveal ? `<div class="explain ${ok ? "ok" : "ng"}">
     <div class="verdict ${ok ? "ok" : "ng"}">${ok ? "⭕ 正解！" : `❌ 不正解（正解は ${LABELS[q.answer]}）`}</div>
@@ -269,7 +270,8 @@ function renderSession() {
   ${mock ? `<button id="prev" ${s.i === 0 ? "disabled" : ""}>前の問題</button>
             <button id="next" ${s.i === s.questions.length - 1 ? "disabled" : ""}>次の問題</button>
             <button class="primary" id="finish">試験を終了する</button>`
-    : reveal ? `<button class="primary next" id="next">${s.i === s.questions.length - 1 ? "結果を見る 🎊" : "次の問題 →"}</button>` : ""}
+    : reveal ? `<button class="primary next" id="next">${s.i === s.questions.length - 1 ? "結果を見る 🎊" : "次の問題 →"}</button>
+      ${ok ? `<button id="unsure" ${s.unsure?.has(s.i) ? "disabled" : ""}>${s.unsure?.has(s.i) ? "🤔 明日の復習に入れました" : "🤔 自信なし"}</button>` : ""}` : ""}
 </div>
 ${mock ? `<section class="card">
   <div class="muted">解答済み ${answeredCount} / ${s.questions.length}</div>
@@ -301,6 +303,13 @@ ${mock ? `<section class="card">
     app.querySelector("#next").onclick = () => {
       if (s.i === s.questions.length - 1) finishSession();
       else { s.i++; s.revealed = false; render(); window.scrollTo(0, 0); }
+    };
+    const unsure = app.querySelector("#unsure");
+    if (unsure) unsure.onclick = () => {
+      progress.stats = markUnsure(progress.stats, q.id, localDate());
+      save();
+      (s.unsure ??= new Set()).add(s.i);
+      render();
     };
     if (s.justAnswered) {
       s.justAnswered = false;

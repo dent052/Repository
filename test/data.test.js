@@ -118,3 +118,23 @@ test("用語集は一意で、80字以内の説明と章を持ち、テキスト
   }
   assert.ok(glossary.length >= 150, `用語集が ${glossary.length} 語しかない`);
 });
+
+test("科目Aには難易度があり、本番レベルが各章で模擬試験3回分以上、全体の7割以上ある", () => {
+  for (const q of questionsA) assert.ok(["exam", "basic"].includes(q.level), `${q.id}: level`);
+  const exam = questionsA.filter((q) => q.level === "exam");
+  for (let ch = 1; ch <= 9; ch++) {
+    const n = exam.filter((q) => q.chapter === ch).length;
+    assert.ok(n >= MOCK_QUOTA[ch] * 3, `章${ch} の本番レベルは ${n} 問しかない`);
+  }
+  assert.ok(exam.length / questionsA.length >= 0.7, `本番レベルは ${exam.length} / ${questionsA.length} 問`);
+});
+
+test("本番レベルの問題は、選択肢の長さで正解が分からない（正解が唯一の最長である問題は3割以下）", () => {
+  const exam = questionsA.filter((q) => q.level === "exam");
+  const longest = exam.filter((q) => {
+    const len = q.choices.map((c) => c.length);
+    const max = Math.max(...len);
+    return len[q.answer] === max && len.filter((x) => x === max).length === 1;
+  });
+  assert.ok(longest.length / exam.length <= 0.3, `正解が最長の問題: ${longest.length} / ${exam.length}`);
+});

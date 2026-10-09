@@ -52,6 +52,11 @@ export function recordAnswer(stats, id, correct, today) {
   };
 }
 
+// 正解したが自信がない問題: 正解の記録は残し、習熟段階を0に戻して翌日の復習に入れる
+export function markUnsure(stats, id, today) {
+  return { ...stats, [id]: { ...stats[id], box: 0, due: addDays(today, INTERVALS[0]) } };
+}
+
 export function dueIds(stats, today) {
   return Object.keys(stats).filter((id) => stats[id].due <= today);
 }
@@ -106,7 +111,7 @@ export function examPlan(examDate, today, unanswered) {
 
 export function buildMockExam(questionsA, questionsB, rng = Math.random) {
   const partA = Object.entries(MOCK_QUOTA).flatMap(([ch, n]) =>
-    shuffle(questionsA.filter((q) => String(q.chapter) === ch), rng).slice(0, n),
+    shuffle(questionsA.filter((q) => String(q.chapter) === ch && q.level === "exam"), rng).slice(0, n),
   );
   return [...partA, ...shuffle(questionsB, rng).slice(0, MOCK_B)];
 }
