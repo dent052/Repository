@@ -4,9 +4,10 @@ import { chapters } from "../web/data/chapters.js";
 import { questionsA } from "../web/data/questions-a.js";
 import { questionsB } from "../web/data/questions-b.js";
 import { glossary } from "../web/data/glossary.js";
+import { pastExams, pastQuestions } from "../web/data/questions-past.js";
 import { MOCK_B, MOCK_QUOTA } from "../web/core.js";
 
-const all = [...questionsA, ...questionsB];
+const all = [...questionsA, ...questionsB, ...pastQuestions];
 
 test("章は 1〜10 の連番で、本文がある", () => {
   assert.deepEqual(chapters.map((c) => c.id), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
@@ -144,4 +145,29 @@ test("本番レベルの問題は、選択肢の長さで正解が分からな�
     return len[q.answer] === max && len.filter((x) => x === max).length === 1;
   });
   assert.ok(longest.length / exam.length <= 0.3, `正解が最長の問題: ${longest.length} / ${exam.length}`);
+});
+
+test("過去問は回ごとに問番号順で、ID・章・出典の情報がそろっている", () => {
+  const keys = pastExams.map((e) => e.key);
+  assert.equal(new Set(keys).size, keys.length);
+  for (const e of pastExams) assert.match(e.title, /情報セキュリティマネジメント試験/);
+  for (const q of pastQuestions) {
+    assert.ok(keys.includes(q.exam), q.id);
+    assert.equal(q.id, `p-${q.exam}-${String(q.no).padStart(2, "0")}`);
+    assert.ok(q.chapter >= 1 && q.chapter <= 10, q.id);
+    assert.ok(q.choices.length >= 4 && q.choices.length <= 10, q.id);
+    assert.equal(q.level, undefined, q.id);
+    assert.ok(q.modified === undefined || q.modified === true, q.id);
+  }
+  for (const key of keys) {
+    const nos = pastQuestions.filter((q) => q.exam === key).map((q) => q.no);
+    assert.ok(nos.length > 0, `${key} に問題がない`);
+    assert.deepEqual(nos, [...nos].sort((a, b) => a - b), `${key} が問番号順でない`);
+  }
+});
+
+test("新制度の公開問題（令和5〜8年度）は各回15問を全て収録している", () => {
+  for (const key of ["r05", "r06", "r07", "r08"]) {
+    assert.equal(pastQuestions.filter((q) => q.exam === key).length, 15, key);
+  }
 });
