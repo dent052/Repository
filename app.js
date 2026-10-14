@@ -2,6 +2,7 @@ import { chapters } from "./data/chapters.js";
 import { questionsA } from "./data/questions-a.js";
 import { questionsB } from "./data/questions-b.js";
 import { glossary } from "./data/glossary.js";
+import { pastExams, pastQuestions } from "./data/questions-past.js";
 import {
   QUIZ_SIZE, MOCK_MINUTES, PASS_SCORE, shuffle, isQuizPassed, recordAnswer, buildMockExam, scoreExam,
   localDate, dueIds, predictScore, streakDays, markDay, examPlan, findTerms, markUnsure,
@@ -12,8 +13,10 @@ const ICONS = { 1: "🛡️", 2: "🦠", 3: "🔑", 4: "🧱", 5: "📋", 6: "�
 const KEY = "sg-trainer-progress";
 const MAX_EXAMS = 20;
 const app = document.getElementById("app");
-const allQuestions = [...questionsA, ...questionsB];
-const examQuestions = [...questionsA.filter((q) => q.level === "exam"), ...questionsB]; // 予測点に使う本番レベルの問題
+const allQuestions = [...questionsA, ...questionsB, ...pastQuestions];
+const examQuestions = [...questionsA.filter((q) => q.level === "exam"), ...questionsB, ...pastQuestions]; // 予測点に使う本番レベルの問題
+const examTitle = new Map(pastExams.map((e) => [e.key, e.title]));
+const pastOf = (key) => pastQuestions.filter((q) => q.exam === key);
 const byId = new Map(allQuestions.map((q) => [q.id, q]));
 const poolOf = (ch) => (ch === 10 ? questionsB : questionsA.filter((q) => q.chapter === ch));
 const chapterName = (ch) => (Number(ch) === 10 ? "科目B" : `第${ch}章 ${chapters[ch - 1].title}`);
@@ -93,6 +96,10 @@ function startField(ch) {
   startSession("practice", `${ICONS[ch]} ${ch === 10 ? "科目B演習" : `分野別演習: ${chapters[ch - 1].title}`}`, shuffle(poolOf(ch)));
 }
 
+function startPast(key) {
+  startSession("practice", `📜 ${examTitle.get(key).replace("情報セキュリティマネジメント試験 ", "")}`, pastOf(key));
+}
+
 // ---- 描画 ----
 function render() {
   if (view.name === "home") renderHome();
@@ -170,14 +177,23 @@ function renderHome() {
   </div>
 </section>
 
+<section class="card">
+  <h2>📜 過去問演習</h2>
+  <p class="muted small">IPA が公表している過去問題です。本番と同じ問番号の順に解きます。</p>
+  <div class="fields">
+    ${pastExams.map((e) => `<button data-past="${e.key}">${e.title.replace("情報セキュリティマネジメント試験 ", "")}（${pastOf(e.key).length}問）</button>`).join("")}
+  </div>
+</section>
+
 ${progress.exams.length ? `<section class="card"><h2>🏆 模擬試験の記録</h2>
   <table class="result"><tr><th>日時</th><th>得点</th><th>判定</th></tr>
   ${progress.exams.slice().reverse().map((e) => `<tr><td>${new Date(e.date).toLocaleString("ja-JP")}</td><td class="r">${e.score}</td><td>${e.score >= PASS_SCORE ? "合格圏" : "不合格圏"}</td></tr>`).join("")}
   </table></section>` : ""}
-<p class="muted small">問題・解説はシラバスの出題範囲に沿って作成したオリジナルです。予測点・得点は均等配点による目安で、本番（IRT方式）とは異なります。</p>`;
+<p class="muted small">過去問演習以外の問題と、全ての解説は、シラバスの出題範囲に沿って作成したオリジナルです。過去問演習の問題は IPA（独立行政法人情報処理推進機構）が公表している過去問題で、各問に出典を表示しています。予測点・得点は均等配点による目安で、本番（IRT方式）とは異なります。</p>`;
 
   app.querySelectorAll("[data-chapter]").forEach((b) => (b.onclick = () => go({ name: "chapter", id: Number(b.dataset.chapter) })));
   app.querySelectorAll("[data-field]").forEach((b) => (b.onclick = () => startField(Number(b.dataset.field))));
+  app.querySelectorAll("[data-past]").forEach((b) => (b.onclick = () => startPast(b.dataset.past)));
   app.querySelector('[data-mode="mock"]').onclick = startMock;
   const rv = app.querySelector('[data-mode="review"]');
   if (rv) rv.onclick = () => startSession("review", "🔁 今日の復習", shuffle(reviewQuestions()));
@@ -229,6 +245,7 @@ function questionHtml(q, picked, reveal) {
   return `
 ${q.scenario ? `<div class="scenario">${q.scenario}</div>` : ""}
 <div class="qtext">${q.question}</div>
+${q.exam ? `<p class="src">出典：${examTitle.get(q.exam)} 問${q.no}${q.modified ? "（一部改変）" : ""}</p>` : ""}
 <ol class="choices">
   ${q.choices.map((c, k) => {
     let cls = "";
@@ -260,7 +277,7 @@ function renderSession() {
     <span class="num muted">${s.i + 1} / ${s.questions.length}</span>
   </div>
   <div class="bar"><i style="--w:${((s.i + 1) / s.questions.length) * 100}%"></i></div>
-  <div class="eyebrow">${q.chapter === 10 ? "🧩 科目B" : `${ICONS[q.chapter]} 科目A ・ 第${q.chapter}章`}${q.level === "basic" ? ' <span class="lv">基礎</span>' : ""}</div>
+  <div class="eyebrow">${q.chapter === 10 ? "🧩 科目B" : `${ICONS[q.chapter]} 科目A ・ 第${q.chapter}章`}${q.level === "basic" ? ' <span class="lv">基礎</span>' : ""}${q.exam ? ' <span class="lv past">過去問</span>' : ""}</div>
   ${questionHtml(q, picked, reveal)}
   ${reveal ? `<div class="explain ${ok ? "ok" : "ng"}">
     <div class="verdict ${ok ? "ok" : "ng"}">${ok ? "⭕ 正解！" : `❌ 不正解（正解は ${LABELS[q.answer]}）`}</div>
