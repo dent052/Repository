@@ -5,7 +5,7 @@ import { glossary } from "./data/glossary.js";
 import { pastExams, pastQuestions } from "./data/questions-past.js";
 import {
   QUIZ_SIZE, MOCK_MINUTES, PASS_SCORE, shuffle, isQuizPassed, recordAnswer, buildMockExam, scoreExam,
-  localDate, dueIds, predictScore, streakDays, markDay, examPlan, findTerms, markUnsure,
+  localDate, dueIds, predictScore, streakDays, markDay, examPlan, findTerms, markUnsure, reviewTarget, resumeIds,
 } from "./core.js";
 
 const LABELS = "アイウエオカキクケコ";
@@ -27,6 +27,7 @@ const reducedMotion = () => window.matchMedia?.("(prefers-reduced-motion: reduce
 // ---- 進捗の保存（localStorage、使えれば claude.ai の db にも） ----
 const normalize = (p) => ({
   passed: p?.passed ?? {}, stats: p?.stats ?? {}, exams: p?.exams ?? [], days: p?.days ?? [], examDate: p?.examDate ?? null,
+  resume: p?.resume ?? {},
 });
 let progress = normalize(readLocal());
 let remote = null;
@@ -92,12 +93,24 @@ function startMock() {
 
 const reviewQuestions = () => dueIds(progress.stats, localDate()).filter((id) => byId.has(id)).map((id) => byId.get(id));
 
+// 途中でやめた演習は続き（まだ解いていない問題）から始める
+function startPractice(key, title, fresh) {
+  const ids = resumeIds(progress.resume[key], (id) => byId.has(id));
+  startSession("practice", title, ids ? ids.map((id) => byId.get(id)) : fresh(), { resumeKey: key });
+}
+
 function startField(ch) {
-  startSession("practice", `${ICONS[ch]} ${ch === 10 ? "科目B演習" : `分野別演習: ${chapters[ch - 1].title}`}`, shuffle(poolOf(ch)));
+  startPractice(`field:${ch}`, `${ICONS[ch]} ${ch === 10 ? "科目B演習" : `分野別演習: ${chapters[ch - 1].title}`}`, () => shuffle(poolOf(ch)));
 }
 
 function startPast(key) {
-  startSession("practice", `📜 ${examTitle.get(key).replace("情報セキュリティマネジメント試験 ", "")}`, pastOf(key));
+  startPractice(`past:${key}`, `📜 ${examTitle.get(key).replace("情報セキュリティマネジメント試験 ", "")}`, () => pastOf(key));
+}
+
+// 演習ボタンに出す「残り○問」
+function resumeBadge(key) {
+  const r = progress.resume[key];
+  return r ? ` <span class="resume">▶ 残り${r.ids.length - r.n}問</span>` : "";
 }
 
 // ---- 描画 ----
@@ -169,11 +182,11 @@ function renderHome() {
   <h2>🎯 演習</h2>
   <div class="modes">
     <button class="mode mock" data-mode="mock"><span class="mode-emoji">🏆</span><b>模擬試験</b><small>科目A 48問 + 科目B 12問 / ${MOCK_MINUTES}分</small></button>
-    <button class="mode" data-field="10"><span class="mode-emoji">🧩</span><b>科目B演習</b><small>事例問題 ${questionsB.length}問</small></button>
+    <button class="mode" data-field="10"><span class="mode-emoji">🧩</span><b>科目B演習</b><small>事例問題 ${questionsB.length}問${resumeBadge("field:10")}</small></button>
   </div>
   <p class="label" style="margin-top:16px">分野別演習（科目A）</p>
   <div class="fields">
-    ${chapters.filter((c) => c.id <= 9).map((c) => `<button data-field="${c.id}" title="${c.title}">${ICONS[c.id]} ${c.title}</button>`).join("")}
+    ${chapters.filter((c) => c.id <= 9).map((c) => `<button data-field="${c.id}" title="${c.title}">${ICONS[c.id]} ${c.title}${resumeBadge(`field:${c.id}`)}</button>`).join("")}
   </div>
 </section>
 
@@ -181,7 +194,7 @@ function renderHome() {
   <h2>📜 過去問演習</h2>
   <p class="muted small">IPA が公表している過去問題です。本番と同じ問番号の順に解きます。</p>
   <div class="fields">
-    ${pastExams.map((e) => `<button data-past="${e.key}">${e.title.replace("情報セキュリティマネジメント試験 ", "")}（${pastOf(e.key).length}問）</button>`).join("")}
+    ${pastExams.map((e) => `<button data-past="${e.key}">${e.title.replace("情報セキュリティマネジメント試験 ", "")}（${pastOf(e.key).length}問）${resumeBadge(`past:${e.key}`)}</button>`).join("")}
   </div>
 </section>
 
@@ -219,23 +232,37 @@ function countUp() {
   requestAnimationFrame(step);
 }
 
-function renderChapter() {
-  const c = chapters[view.id - 1];
-  app.innerHTML = `
-<button class="back" id="home">← ホーム</button>
-<article class="card text">
+const chapterHtml = (c) => `<article class="card text">
   <div class="eyebrow">${ICONS[c.id]} 第${c.id}章</div>
   <h1>${c.title}</h1>
   <p class="goal"><b>🎯 この章のゴール:</b> ${c.goal}</p>
   ${c.body}
-</article>
-<div class="row"><button class="primary" id="quiz">✏️ 確認テストを受ける（${QUIZ_SIZE}問）</button>
-${progress.passed[c.id] ? '<span class="badge">合格済み</span>' : ""}</div>`;
-  wrapTables();
-  const text = app.querySelector(".text");
-  // この章で太字にして説明している用語は、そばに説明があるので下線を付けない
+</article>`;
+
+// テキストの表を横スクロールにし、用語に下線を付ける（この章で太字にして説明している用語は、そばに説明があるので付けない）
+function decorateText(root) {
+  wrapTables(root);
+  const text = root.querySelector(".text");
   const bold = [...text.querySelectorAll("b")].map((b) => b.textContent);
   linkTerms(text, new Set(TERMS.filter((t) => bold.some((b) => b.includes(t)))));
+  // 太字や表の1列目で説明している略語は、タップできないので正式名称を添える（各用語の最初の1か所だけ）
+  const shown = new Set();
+  for (const el of text.querySelectorAll("b, tr > td:first-child")) {
+    const g = byTerm.get(el.textContent.trim());
+    if (!g?.en || shown.has(g.term)) continue;
+    shown.add(g.term);
+    el.insertAdjacentHTML("beforeend", ` <small class="en">${g.en}</small>`);
+  }
+}
+
+function renderChapter() {
+  const c = chapters[view.id - 1];
+  app.innerHTML = `
+<button class="back" id="home">← ホーム</button>
+${chapterHtml(c)}
+<div class="row"><button class="primary" id="quiz">✏️ 確認テストを受ける（${QUIZ_SIZE}問）</button>
+${progress.passed[c.id] ? '<span class="badge">合格済み</span>' : ""}</div>`;
+  decorateText(app);
   app.querySelector("#home").onclick = () => go({ name: "home" });
   app.querySelector("#quiz").onclick = () =>
     startSession("quiz", `${ICONS[c.id]} 第${c.id}章 確認テスト`, shuffle(poolOf(c.id)).slice(0, QUIZ_SIZE), { chapterId: c.id });
@@ -281,7 +308,7 @@ function renderSession() {
   ${questionHtml(q, picked, reveal)}
   ${reveal ? `<div class="explain ${ok ? "ok" : "ng"}">
     <div class="verdict ${ok ? "ok" : "ng"}">${ok ? "⭕ 正解！" : `❌ 不正解（正解は ${LABELS[q.answer]}）`}</div>
-    <p>${q.explanation}</p></div>` : ""}
+    <p>${q.explanation}</p>${readButton(q)}</div>` : ""}
 </section>
 <div class="row">
   ${mock ? `<button id="prev" ${s.i === 0 ? "disabled" : ""}>前の問題</button>
@@ -374,6 +401,10 @@ function pick(k) {
   s.justAnswered = true;
   s.combo = ok ? s.combo + 1 : 0;
   record(q, ok);
+  if (s.resumeKey) {
+    if (s.i + 1 < s.questions.length) progress.resume[s.resumeKey] = { ids: s.questions.map((x) => x.id), n: s.i + 1 };
+    else delete progress.resume[s.resumeKey];
+  }
   save();
   render();
 }
@@ -436,8 +467,8 @@ ${wrong.length ? `<section class="card"><h2>間違えた問題（${wrong.length}
 }
 
 // 表を横スクロール可能な枠で包む（狭い画面対策）
-function wrapTables() {
-  app.querySelectorAll(".text table, .scenario table, .qtext table").forEach((t) => {
+function wrapTables(root = app) {
+  root.querySelectorAll(".text table, .scenario table, .qtext table").forEach((t) => {
     if (t.parentElement.classList.contains("tablewrap")) return;
     const w = document.createElement("div");
     w.className = "tablewrap";
@@ -485,13 +516,60 @@ document.addEventListener("click", (e) => {
   if (t) {
     const g = byTerm.get(t.dataset.term);
     sheet.innerHTML = `<div class="sheet-head"><b>${g.term}</b><button type="button" class="sheet-close" aria-label="閉じる">✕</button></div>
-      <p>${g.desc}</p><small class="muted">📖 ${chapterName(g.ch)}</small>`;
+      ${g.en ? `<small class="en">${g.en}</small>` : ""}
+      <p>${g.desc}</p><button type="button" class="read" data-read="${g.ch}" data-term="${g.term}">📖 ${chapterName(g.ch)} を読む</button>`;
     sheet.hidden = false;
   } else if (!sheet.hidden && (!sheet.contains(e.target) || e.target.closest(".sheet-close"))) {
     sheet.hidden = true;
   }
 });
-document.addEventListener("keydown", (e) => { if (e.key === "Escape") sheet.hidden = true; });
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Escape") return;
+  if (!sheet.hidden) sheet.hidden = true;
+  else closeReader();
+});
+
+// 解答画面などの上に章のテキストを重ねて開き、用語の説明の位置までスクロールする
+const reader = document.createElement("div");
+reader.className = "reader";
+reader.hidden = true;
+document.body.append(reader);
+
+function readButton(q) {
+  const t = reviewTarget(q.explanation.replace(/<[^>]+>/g, ""), glossary, q.chapter);
+  return `<button type="button" class="read" data-read="${t.ch}" data-term="${t.term ?? ""}">📖 テキストで確認（${chapterName(t.ch)}）</button>`;
+}
+
+function openReader(ch, term) {
+  reader.innerHTML = `<div class="reader-bar"><button type="button" class="back" id="reader-close">${view.name === "session" ? "← 問題に戻る" : "← 戻る"}</button></div>
+${chapterHtml(chapters[ch - 1])}`;
+  decorateText(reader);
+  reader.querySelector("#reader-close").onclick = closeReader;
+  reader.hidden = false;
+  document.body.classList.add("reading");
+  reader.scrollTop = 0;
+  if (!term) return;
+  // 太字の説明を優先し、なければ本文中の最初の出現位置に移る
+  const text = reader.querySelector(".text");
+  const el = [...text.querySelectorAll("b")].find((b) => b.textContent.includes(term))
+    ?? [...text.querySelectorAll("p, li, td, .term")].find((e) => e.textContent.includes(term));
+  if (!el) return;
+  el.classList.add("hit");
+  el.scrollIntoView({ block: "center" });
+}
+
+function closeReader() {
+  reader.hidden = true;
+  reader.innerHTML = "";
+  document.body.classList.remove("reading");
+}
+
+document.addEventListener("click", (e) => {
+  const r = e.target.closest?.("[data-read]");
+  if (!r) return;
+  sheet.hidden = true;
+  openReader(Number(r.dataset.read), r.dataset.term || null);
+});
 
 render();
 connectRemote();

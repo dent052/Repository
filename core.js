@@ -154,3 +154,18 @@ export function findTerms(text, terms, skip = new Set()) {
   }
   return found.sort((a, b) => a.start - b.start);
 }
+
+// 解答後に見直すテキストの場所。解説に出る用語のうち問題の章で扱う語、なければ最初の語の章、なければ問題の章の先頭
+export function reviewTarget(text, glossary, chapter) {
+  const byTerm = new Map(glossary.map((g) => [g.term, g]));
+  const found = findTerms(text, glossary.map((g) => g.term)).map((f) => byTerm.get(f.term));
+  const hit = found.find((g) => g.ch === chapter) ?? found[0];
+  return hit ? { ch: hit.ch, term: hit.term } : { ch: chapter, term: null };
+}
+
+// 途中でやめた演習の残りの問題 ID（解き終えていれば null）
+export function resumeIds(saved, has) {
+  if (!saved || saved.n >= saved.ids.length) return null;
+  const ids = saved.ids.slice(saved.n).filter(has);
+  return ids.length ? ids : null;
+}

@@ -184,6 +184,18 @@ button.term:active:not(:disabled) { transform: none; box-shadow: none; }
 .sheet-head b { font-size: 1.05rem; color: var(--accent); }
 .sheet-close { padding: .1em .6em; border-radius: 999px; box-shadow: none; }
 .sheet p { margin: .3em 0; }
+.sheet .en { display: block; color: var(--muted); font-size: .8rem; }
+.text .en { font-weight: 400; color: var(--muted); font-size: .72rem; }
+.text td .en { display: block; line-height: 1.4; }
+button.read { margin-top: .6em; font-size: .85rem; padding: .35em .9em; }
+.resume { display: inline-block; margin-left: .4em; font-size: .7rem; font-weight: 800; padding: .05em .6em; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+
+/* 解答画面の上に重ねて開くテキスト */
+.reader { position: fixed; inset: 0; z-index: 9; overflow-y: auto; background: var(--bg); padding: 0 16px 40px; }
+.reader > * { max-width: 720px; margin-left: auto; margin-right: auto; }
+.reader-bar { position: sticky; top: 0; z-index: 1; background: var(--bg); padding: 12px 0; }
+body.reading { overflow: hidden; }
+.hit { background: var(--yellow); color: #000; border-radius: 4px; scroll-margin: 40vh; }
 
 /* 正解の紙吹雪 */
 .burst { position: absolute; left: 50%; top: 50%; pointer-events: none; }
