@@ -173,7 +173,8 @@ test("新制度の公開問題（令和5〜8年度）は各回15問を全て収�
 });
 
 test("英字の略語を含む用語は、何の頭文字かが分かる正式名称（en）を持つ", () => {
-  for (const g of glossary.filter((g) => /[A-Z]{2,}/.test(g.term))) {
+  const names = ["PowerShell", "Emotet", "Cookie"]; // 略語ではない固有名・一般名
+  for (const g of glossary.filter((g) => /[A-Z]/.test(g.term) && !names.includes(g.term))) {
     assert.ok(/[A-Za-z]{3,}/.test(g.en ?? ""), `${g.term} に正式名称がない`);
   }
 });
