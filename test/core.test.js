@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import {
   shuffle, isQuizPassed,
   recordAnswer, MOCK_QUOTA, MOCK_A, buildMockExam, scoreExam,
-  addDays, dueIds, predictScore, streakDays, markDay, examPlan, findTerms, markUnsure,
+  addDays, dueIds, predictScore, streakDays, markDay, examPlan, findTerms, markUnsure, reviewTarget, resumeIds,
 } from "../web/core.js";
 
 const fixedRng = () => 0;
@@ -160,4 +160,31 @@ test("markUnsure は正解の記録を残したまま、習熟段階を0に戻�
   const s2 = markUnsure(s1, "q", "2026-10-08");
   assert.deepEqual(s2.q, { c: 2, w: 0, last: true, box: 0, due: "2026-10-09" });
   assert.equal(s1.q.box, 2);
+});
+
+const glossaryFixture = [
+  { term: "SPF", ch: 4 }, { term: "DNS", ch: 8 }, { term: "なりすまし", ch: 2 },
+];
+
+test("reviewTarget は解説に出てくる用語のうち、問題の章で扱う語を優先して開く場所を決める", () => {
+  const text = "DNS を使ったなりすましを SPF で防ぎます。";
+  assert.deepEqual(reviewTarget(text, glossaryFixture, 4), { ch: 4, term: "SPF" });
+});
+
+test("reviewTarget は問題の章の語がなければ、解説に最初に出てくる語の章を開く", () => {
+  assert.deepEqual(reviewTarget("DNS を使ったなりすまし", glossaryFixture, 1), { ch: 8, term: "DNS" });
+});
+
+test("reviewTarget は用語が出てこなければ、問題の章の先頭を開く", () => {
+  assert.deepEqual(reviewTarget("用語なし", glossaryFixture, 3), { ch: 3, term: null });
+});
+
+test("resumeIds は解き終えた問題を除いた残りを返し、もう無い問題は飛ばす", () => {
+  const saved = { ids: ["q1", "q2", "q3", "q4"], n: 1 };
+  assert.deepEqual(resumeIds(saved, (id) => id !== "q3"), ["q2", "q4"]);
+});
+
+test("resumeIds は記録がないか、最後まで解き終えていれば null を返す", () => {
+  assert.equal(resumeIds(undefined, () => true), null);
+  assert.equal(resumeIds({ ids: ["q1", "q2"], n: 2 }, () => true), null);
 });
