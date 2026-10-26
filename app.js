@@ -74,6 +74,8 @@ function record(q, correct) {
 // ---- 画面状態 ----
 let view = { name: "home" };
 let timerId = null;
+let subPushed = false; // ホーム以外の画面用に履歴を積んだか
+let readerPushed = false;
 
 function go(next) {
   clearInterval(timerId); // 画面を離れるときはタイマーを必ず止める
@@ -81,6 +83,9 @@ function go(next) {
   view = next;
   render();
   window.scrollTo(0, 0);
+  // 端末の「戻る」でアプリを閉じず、ホームへ戻れるよう履歴を1つ積む
+  if (next.name !== "home" && !subPushed) { history.pushState(null, ""); subPushed = true; }
+  else if (next.name === "home" && subPushed) { subPushed = false; history.back(); }
 }
 
 function startSession(kind, title, questions, extra = {}) {
@@ -526,7 +531,7 @@ document.addEventListener("click", (e) => {
 document.addEventListener("keydown", (e) => {
   if (e.key !== "Escape") return;
   if (!sheet.hidden) sheet.hidden = true;
-  else closeReader();
+  else if (readerPushed) history.back();
 });
 
 // 解答画面などの上に章のテキストを重ねて開き、用語の説明の位置までスクロールする
@@ -544,8 +549,10 @@ function openReader(ch, term) {
   reader.innerHTML = `<div class="reader-bar"><button type="button" class="back" id="reader-close">${view.name === "session" ? "← 問題に戻る" : "← 戻る"}</button></div>
 ${chapterHtml(chapters[ch - 1])}`;
   decorateText(reader);
-  reader.querySelector("#reader-close").onclick = closeReader;
+  reader.querySelector("#reader-close").onclick = () => history.back();
   reader.hidden = false;
+  history.pushState(null, "");
+  readerPushed = true;
   document.body.classList.add("reading");
   reader.scrollTop = 0;
   if (!term) return;
@@ -559,6 +566,7 @@ ${chapterHtml(chapters[ch - 1])}`;
 }
 
 function closeReader() {
+  readerPushed = false;
   reader.hidden = true;
   reader.innerHTML = "";
   document.body.classList.remove("reading");
@@ -569,6 +577,12 @@ document.addEventListener("click", (e) => {
   if (!r) return;
   sheet.hidden = true;
   openReader(Number(r.dataset.read), r.dataset.term || null);
+});
+
+// 端末の「戻る」: テキスト表示→閉じる、他の画面→ホーム、ホーム→通常どおり終了
+window.addEventListener("popstate", () => {
+  if (readerPushed) closeReader();
+  else if (subPushed) { subPushed = false; go({ name: "home" }); }
 });
 
 render();
