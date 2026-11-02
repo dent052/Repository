@@ -102,33 +102,28 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 .plan b { color: var(--accent); }
 input[type="date"] { font: inherit; font-weight: 700; color: var(--ink); background: var(--bg); border: 2px solid var(--line); border-radius: 12px; padding: .3em .6em; }
 
-/* 章一覧 */
-.chapters { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
-.ch { width: 100%; display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; text-align: left; padding: 10px 14px; }
-.ch-icon { font-size: 1.6rem; width: 1.6em; height: 1.6em; display: grid; place-items: center; border-radius: 12px; background: var(--accent-soft); }
-.ch-body { display: grid; gap: 4px; }
-.ch-title { line-height: 1.4; }
-.mini { height: 8px; border-radius: 999px; background: var(--line); overflow: hidden; }
-.mini i { display: block; height: 100%; width: var(--w); border-radius: 999px; background: linear-gradient(90deg, var(--ok), var(--yellow)); }
-
-/* 演習 */
-.modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
-.mode { text-align: left; display: grid; gap: 2px; padding: 14px 16px; }
+/* 模擬試験 */
+.mode { width: 100%; text-align: left; display: grid; gap: 2px; padding: 14px 16px; margin: 6px 0 10px; }
 .mode.mock { background: var(--yellow); border-color: var(--yellow); color: #3a2a00; box-shadow: 0 4px 0 #d9a400; }
-.mode-emoji { font-size: 1.8rem; }
 .mode small { font-weight: 400; font-size: .85rem; }
-.fields { display: flex; flex-wrap: wrap; gap: 8px; }
-.fields button { font-size: .9rem; padding: .45em .9em; border-radius: 999px; }
 
-/* テキスト */
-.text table, .scenario table, .qtext table { border-collapse: collapse; width: 100%; font-size: .92rem; margin: .5em 0; }
+/* 表 */
+.scenario table, .qtext table { border-collapse: collapse; width: 100%; font-size: .92rem; margin: .5em 0; }
 .tablewrap { overflow-x: auto; }
-.text th, .text td, .scenario th, .scenario td, .qtext th, .qtext td { border: 2px solid var(--line); padding: .45em .6em; text-align: left; vertical-align: top; }
-.text th, .scenario th, .qtext th { background: var(--accent-soft); }
-.tip { background: var(--tip); border: 2px dashed var(--tip-line); padding: .7em 1em; border-radius: 14px; }
-.tip::before { content: "💡 "; }
-.goal { background: var(--accent-soft); padding: .7em 1em; border-radius: 14px; }
-blockquote { margin: .5em 0; padding: .6em 1em; border-left: 4px solid var(--line); background: var(--bg); border-radius: 8px; }
+.scenario th, .scenario td, .qtext th, .qtext td { border: 2px solid var(--line); padding: .45em .6em; text-align: left; vertical-align: top; }
+.scenario th, .qtext th { background: var(--accent-soft); }
+
+/* 話 */
+.review-card { display: grid; gap: 12px; }
+.cta.clean { background: linear-gradient(135deg, var(--ok), var(--ok-edge)); box-shadow: 0 5px 0 var(--ok-edge); }
+.intro { border-color: var(--accent); }
+.intro p { margin: .4em 0; }
+.hook { background: var(--tip); border: 2px dashed var(--tip-line); padding: .6em .9em; border-radius: 14px; font-size: 1.05rem; }
+.retry { font-weight: 800; color: var(--accent); margin-bottom: 0; }
+.lv.retry-tag { background: var(--accent); color: #fff; }
+.hooks { margin: .4em 0; padding-left: 1.2em; display: grid; gap: .6em; }
+.ending { text-align: left; }
+.up { color: var(--ok); font-weight: 800; }
 
 /* 問題 */
 .qcard { display: grid; gap: 6px; }
@@ -185,17 +180,6 @@ button.term:active:not(:disabled) { transform: none; box-shadow: none; }
 .sheet-close { padding: .1em .6em; border-radius: 999px; box-shadow: none; }
 .sheet p { margin: .3em 0; }
 .sheet .en { display: block; color: var(--muted); font-size: .8rem; }
-.text .en { font-weight: 400; color: var(--muted); font-size: .72rem; }
-.text td .en { display: block; line-height: 1.4; }
-button.read { margin-top: .6em; font-size: .85rem; padding: .35em .9em; }
-.resume { display: inline-block; margin-left: .4em; font-size: .7rem; font-weight: 800; padding: .05em .6em; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
-
-/* 解答画面の上に重ねて開くテキスト */
-.reader { position: fixed; inset: 0; z-index: 9; overflow-y: auto; background: var(--bg); padding: 0 16px 40px; }
-.reader > * { max-width: 720px; margin-left: auto; margin-right: auto; }
-.reader-bar { position: sticky; top: 0; z-index: 1; background: var(--bg); padding: 12px 0; }
-body.reading { overflow: hidden; }
-.hit { background: var(--yellow); color: #000; border-radius: 4px; scroll-margin: 40vh; }
 
 /* 正解の紙吹雪 */
 .burst { position: absolute; left: 50%; top: 50%; pointer-events: none; }
@@ -204,7 +188,7 @@ body.reading { overflow: hidden; }
 /* アニメーション（動きを減らす設定では止める） */
 @media (prefers-reduced-motion: no-preference) {
   .pop-in { animation: pop-in .45s cubic-bezier(.2, 1.4, .4, 1) both; animation-delay: var(--d, 0s); }
-  .meter i, .mini i { animation: grow 1s cubic-bezier(.2, .9, .3, 1) both; }
+  .meter i { animation: grow 1s cubic-bezier(.2, .9, .3, 1) both; }
   .bar i { transition: width .3s; }
   .streak.on .flame { display: inline-block; animation: flicker 1.6s ease-in-out infinite; }
   .cta .go { animation: pulse 1.4s ease-in-out infinite; }

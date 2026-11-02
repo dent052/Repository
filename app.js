@@ -1,33 +1,41 @@
-import { chapters } from "./data/chapters.js";
 import { questionsA } from "./data/questions-a.js";
 import { questionsB } from "./data/questions-b.js";
 import { glossary } from "./data/glossary.js";
 import { pastExams, pastQuestions } from "./data/questions-past.js";
+import { points } from "./data/points.js";
+import { episodes, PLANNED_EPISODES } from "./data/episodes.js";
 import {
-  QUIZ_SIZE, MOCK_MINUTES, PASS_SCORE, shuffle, isQuizPassed, recordAnswer, buildMockExam, scoreExam,
-  localDate, dueIds, predictScore, streakDays, markDay, examPlan, findTerms, markUnsure, reviewTarget, resumeIds,
+  MOCK_MINUTES, PASS_SCORE, shuffle, recordAnswer, buildMockExam, scoreExam,
+  localDate, dueIds, predictScore, streakDays, markDay, examPlan, findTerms, markUnsure, followUp, endingIndex,
 } from "./core.js";
 
 const LABELS = "アイウエオカキクケコ";
 const ICONS = { 1: "🛡️", 2: "🦠", 3: "🔑", 4: "🧱", 5: "📋", 6: "🚨", 7: "⚖️", 8: "💻", 9: "📊", 10: "🧩" };
+const CHAPTERS = {
+  1: "情報セキュリティの基本", 2: "脅威と攻撃手法", 3: "暗号と認証", 4: "技術的セキュリティ対策", 5: "情報セキュリティマネジメント",
+  6: "インシデント対応と組織", 7: "法務と標準・ガイドライン", 8: "テクノロジの基礎", 9: "マネジメント・ストラテジ",
+};
 const KEY = "sg-trainer-progress";
 const MAX_EXAMS = 20;
+const REVIEW_MAX = 15;
+const LEARNED_MAX = 3;
 const app = document.getElementById("app");
 const allQuestions = [...questionsA, ...questionsB, ...pastQuestions];
-const examQuestions = [...questionsA.filter((q) => q.level === "exam"), ...questionsB, ...pastQuestions]; // 予測点に使う本番レベルの問題
-const examTitle = new Map(pastExams.map((e) => [e.key, e.title]));
-const pastOf = (key) => pastQuestions.filter((q) => q.exam === key);
 const byId = new Map(allQuestions.map((q) => [q.id, q]));
-const poolOf = (ch) => (ch === 10 ? questionsB : questionsA.filter((q) => q.chapter === ch));
-const chapterName = (ch) => (Number(ch) === 10 ? "科目B" : `第${ch}章 ${chapters[ch - 1].title}`);
+const examTitle = new Map(pastExams.map((e) => [e.key, e.title]));
+const pointOf = new Map(points.flatMap((p) => p.questions.map((id) => [id, p])));
+const pointById = new Map(points.map((p) => [p.id, p]));
+const inEpisodes = new Set(episodes.flatMap((e) => e.questions));
+const chapterName = (ch) => (Number(ch) === 10 ? "科目B" : `第${ch}章 ${CHAPTERS[ch]}`);
 const TERMS = glossary.map((g) => g.term);
 const byTerm = new Map(glossary.map((g) => [g.term, g]));
 const reducedMotion = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+const score = () => predictScore(progress.stats, allQuestions).score;
 
 // ---- 進捗の保存（localStorage、使えれば claude.ai の db にも） ----
 const normalize = (p) => ({
-  passed: p?.passed ?? {}, stats: p?.stats ?? {}, exams: p?.exams ?? [], days: p?.days ?? [], examDate: p?.examDate ?? null,
-  resume: p?.resume ?? {},
+  stats: p?.stats ?? {}, exams: p?.exams ?? [], days: p?.days ?? [], examDate: p?.examDate ?? null,
+  ep: { next: p?.ep?.next ?? 1, results: p?.ep?.results ?? {}, cur: p?.ep?.cur ?? null },
 });
 let progress = normalize(readLocal());
 let remote = null;
@@ -75,7 +83,6 @@ function record(q, correct) {
 let view = { name: "home" };
 let timerId = null;
 let subPushed = false; // ホーム以外の画面用に履歴を積んだか
-let readerPushed = false;
 
 function go(next) {
   clearInterval(timerId); // 画面を離れるときはタイマーを必ず止める
@@ -98,30 +105,28 @@ function startMock() {
 
 const reviewQuestions = () => dueIds(progress.stats, localDate()).filter((id) => byId.has(id)).map((id) => byId.get(id));
 
-// 途中でやめた演習は続き（まだ解いていない問題）から始める
-function startPractice(key, title, fresh) {
-  const ids = resumeIds(progress.resume[key], (id) => byId.has(id));
-  startSession("practice", title, ids ? ids.map((id) => byId.get(id)) : fresh(), { resumeKey: key });
-}
+const nextEpisode = () => episodes[progress.ep.next - 1];
+// 途中の話（問題がすべて残っているときだけ続きから）
+const currentOf = (e) => {
+  const c = progress.ep.cur;
+  return c?.no === e.no && c.ids.every((id) => byId.has(id)) ? c : null;
+};
 
-function startField(ch) {
-  startPractice(`field:${ch}`, `${ICONS[ch]} ${ch === 10 ? "科目B演習" : `分野別演習: ${chapters[ch - 1].title}`}`, () => shuffle(poolOf(ch)));
-}
-
-function startPast(key) {
-  startPractice(`past:${key}`, `📜 ${examTitle.get(key).replace("情報セキュリティマネジメント試験 ", "")}`, () => pastOf(key));
-}
-
-// 演習ボタンに出す「残り○問」
-function resumeBadge(key) {
-  const r = progress.resume[key];
-  return r ? ` <span class="resume">▶ 残り${r.ids.length - r.n}問</span>` : "";
+function startEpisode() {
+  const e = nextEpisode();
+  const cur = currentOf(e) ?? { no: e.no, ids: [...e.questions], follow: [], i: 0, first: {}, learned: [], before: score() };
+  progress.ep.cur = cur;
+  save();
+  const title = `📁 第${e.no}話 ${e.title}`;
+  const questions = cur.ids.map((id) => byId.get(id));
+  // 最後の問題を解いたあと結末を見ずに閉じていたら、そのまま結末へ
+  if (cur.i >= questions.length) { view = { name: "session", kind: "episode", title, questions, answers: [], ep: e, cur }; finishSession(); return; }
+  startSession("episode", title, questions, { ep: e, cur, i: cur.i });
 }
 
 // ---- 描画 ----
 function render() {
   if (view.name === "home") renderHome();
-  else if (view.name === "chapter") renderChapter();
   else if (view.name === "session") renderSession();
   else if (view.name === "result") renderResult();
 }
@@ -130,12 +135,13 @@ function renderHome() {
   const today = localDate();
   const streak = streakDays(progress.days, today);
   const doneToday = progress.days.includes(today);
-  const started = Object.keys(progress.stats).length > 0;
   const review = reviewQuestions();
-  const p = predictScore(progress.stats, examQuestions);
-  const unanswered = allQuestions.filter((q) => !progress.stats[q.id]).length;
-  const plan = examPlan(progress.examDate, today, unanswered);
+  const p = predictScore(progress.stats, allQuestions);
+  const solved = episodes.filter((e) => progress.ep.results[e.no] != null);
+  const plan = examPlan(progress.examDate, today, Math.max(0, PLANNED_EPISODES - solved.length));
   const gap = PASS_SCORE - p.score;
+  const e = nextEpisode();
+  const cur = e && currentOf(e);
 
   app.innerHTML = `
 <header class="hero-head">
@@ -143,19 +149,20 @@ function renderHome() {
   <div class="streak ${doneToday ? "on" : ""}" title="連続学習日数"><span class="flame">🔥</span><b class="num">${streak}</b><small>日連続</small></div>
 </header>
 
-<section class="card meter-card pop-in">
-  <div class="row between"><span class="label">合格予測メーター</span><span class="muted small">目安</span></div>
+<section class="card review-card pop-in">
+  ${review.length ? `<button class="cta clean" data-mode="review"><span class="cta-emoji">🧹</span><span class="cta-text"><b>後始末</b><small>復習日の問題 ${Math.min(review.length, REVIEW_MAX)}問</small></span><span class="go">GO!</span></button>` : ""}
+  ${e
+    ? `<button class="cta" data-mode="episode"><span class="cta-emoji">📁</span><span class="cta-text"><b>第${e.no}話 ${e.title}</b>
+        <small>${cur ? `続きから（${cur.i} / ${cur.ids.length}問）` : "約15分"}</small></span><span class="go">GO!</span></button>`
+    : `<div class="done-msg"><span class="cta-emoji">🎉</span><div><b>公開中の話はすべて解決！</b>
+       <small class="muted">次の話は準備中です。後始末と模擬試験で力を保とう</small></div></div>`}
+</section>
+
+<section class="card meter-card pop-in" style="--d:.06s">
+  <div class="row between"><span class="label">🏢 会社の安全度（合格予測）</span><span class="muted small">目安</span></div>
   <div class="big"><b class="num count" data-to="${p.score}">${p.score}</b><small> / 1000点</small></div>
   <div class="meter"><i style="--w:${p.score / 10}%"></i><span class="line" title="合格ライン 600点"></span></div>
   <p class="meter-msg">${gap > 0 ? `合格ラインまで <b>あと ${gap} 点</b>` : "🎉 <b>合格圏です！</b> このまま維持しよう"}</p>
-  ${p.focus ? `<button class="chip" data-field="${p.focus.chapter}">${ICONS[p.focus.chapter]} ${chapterName(p.focus.chapter)} を伸ばすと <b>+${p.focus.gain}点</b> →</button>` : ""}
-</section>
-
-<section class="card review-card pop-in" style="--d:.06s">
-  ${review.length
-    ? `<button class="cta" data-mode="review"><span class="cta-emoji">🔁</span><span class="cta-text"><b>今日の復習</b><small>${review.length}問 が復習日です</small></span><span class="go">GO!</span></button>`
-    : `<div class="done-msg"><span class="cta-emoji">${started ? "🎉" : "👋"}</span><div><b>${started ? "今日の復習はおわり！" : "まずは好きな章から解いてみよう"}</b>
-       <small class="muted">${started ? "新しい問題に挑戦すると、予測点がもっと上がります" : "解いた問題は、忘れかけた頃に「今日の復習」に出てきます"}</small></div></div>`}
 </section>
 
 <section class="card exam-card pop-in" style="--d:.12s">
@@ -163,60 +170,37 @@ function renderHome() {
     <span class="label">📅 試験日</span>
     <input type="date" id="examDate" value="${progress.examDate ?? ""}" aria-label="試験日">
   </div>
+  <p class="plan">今日の目安: <b>1話</b></p>
   ${plan ? (plan.daysLeft
-    ? `<p class="plan">試験まで <b class="num">あと ${plan.daysLeft} 日</b>。まだ解いていない ${unanswered}問 を終えるには <b class="num">1日 ${plan.perDay}問</b> ペース</p>`
+    ? `<p class="plan">試験まで <b class="num">あと ${plan.daysLeft} 日</b>。残り ${PLANNED_EPISODES - solved.length}話 を終えるには <b class="num">1日 ${plan.perDay}話</b> ペース</p>`
     : `<p class="plan">試験日です。がんばって！💪</p>`)
-    : `<p class="muted small">試験日を入れると、1日に解く問題数の目安を出します</p>`}
+    : `<p class="muted small">試験日を入れると、試験までに全${PLANNED_EPISODES}話を終えるペースを出します</p>`}
 </section>
+
+${solved.length ? `<section class="card">
+  <h2>🗂️ 事件ファイル</h2>
+  <p class="muted small">解決した事件と、そこで押さえた決め手の1文です。</p>
+  ${solved.map((s) => `<details><summary>第${s.no}話 ${s.title} <span class="muted small">正答率 ${Math.round(progress.ep.results[s.no] * 100)}%</span></summary>
+    <ul class="hooks">${[...new Set(s.questions.map((id) => pointOf.get(id)))].map((pt) => `<li><b>${pt.title}</b><br>${pt.hook}</li>`).join("")}</ul>
+  </details>`).join("")}
+</section>` : ""}
 
 <section class="card">
-  <h2>📚 テキストと確認テスト</h2>
-  <p class="muted small">第1章から読むのがおすすめ。どの章からでも開けます。バーは章ごとの実力です。</p>
-  <ol class="chapters">
-    ${chapters.map((c) => `<li>
-      <button class="ch" data-chapter="${c.id}">
-        <span class="ch-icon">${ICONS[c.id]}</span>
-        <span class="ch-body"><span class="ch-title">${c.id}. ${c.title}</span>
-          <span class="mini"><i style="--w:${Math.round(p.rates[c.id] * 100)}%"></i></span></span>
-        ${progress.passed[c.id] ? '<span class="badge">合格</span>' : ""}
-      </button></li>`).join("")}
-  </ol>
+  <h2>🏆 模擬試験</h2>
+  <button class="mode mock" data-mode="mock"><b>本番と同じ形式で解く</b><small>科目A 48問 + 科目B 12問 / ${MOCK_MINUTES}分</small></button>
+  ${progress.exams.length ? `<table class="result"><tr><th>日時</th><th>得点</th><th>判定</th></tr>
+  ${progress.exams.slice().reverse().map((x) => `<tr><td>${new Date(x.date).toLocaleString("ja-JP")}</td><td class="r">${x.score}</td><td>${x.score >= PASS_SCORE ? "合格圏" : "不合格圏"}</td></tr>`).join("")}
+  </table>` : ""}
 </section>
+<p class="muted small">物語・会社・人物は架空です。過去問以外の問題と、全ての解説・決め手の1文は、シラバスの出題範囲に沿って作成したオリジナルです。過去問は IPA（独立行政法人情報処理推進機構）が公表している過去問題で、各問に出典を表示しています。予測点・得点は均等配点による目安で、本番（IRT方式）とは異なります。</p>`;
 
-<section class="card">
-  <h2>🎯 演習</h2>
-  <div class="modes">
-    <button class="mode mock" data-mode="mock"><span class="mode-emoji">🏆</span><b>模擬試験</b><small>科目A 48問 + 科目B 12問 / ${MOCK_MINUTES}分</small></button>
-    <button class="mode" data-field="10"><span class="mode-emoji">🧩</span><b>科目B演習</b><small>事例問題 ${questionsB.length}問${resumeBadge("field:10")}</small></button>
-  </div>
-  <p class="label" style="margin-top:16px">分野別演習（科目A）</p>
-  <div class="fields">
-    ${chapters.filter((c) => c.id <= 9).map((c) => `<button data-field="${c.id}" title="${c.title}">${ICONS[c.id]} ${c.title}${resumeBadge(`field:${c.id}`)}</button>`).join("")}
-  </div>
-</section>
-
-<section class="card">
-  <h2>📜 過去問演習</h2>
-  <p class="muted small">IPA が公表している過去問題です。本番と同じ問番号の順に解きます。</p>
-  <div class="fields">
-    ${pastExams.map((e) => `<button data-past="${e.key}">${e.title.replace("情報セキュリティマネジメント試験 ", "")}（${pastOf(e.key).length}問）${resumeBadge(`past:${e.key}`)}</button>`).join("")}
-  </div>
-</section>
-
-${progress.exams.length ? `<section class="card"><h2>🏆 模擬試験の記録</h2>
-  <table class="result"><tr><th>日時</th><th>得点</th><th>判定</th></tr>
-  ${progress.exams.slice().reverse().map((e) => `<tr><td>${new Date(e.date).toLocaleString("ja-JP")}</td><td class="r">${e.score}</td><td>${e.score >= PASS_SCORE ? "合格圏" : "不合格圏"}</td></tr>`).join("")}
-  </table></section>` : ""}
-<p class="muted small">過去問演習以外の問題と、全ての解説は、シラバスの出題範囲に沿って作成したオリジナルです。過去問演習の問題は IPA（独立行政法人情報処理推進機構）が公表している過去問題で、各問に出典を表示しています。予測点・得点は均等配点による目安で、本番（IRT方式）とは異なります。</p>`;
-
-  app.querySelectorAll("[data-chapter]").forEach((b) => (b.onclick = () => go({ name: "chapter", id: Number(b.dataset.chapter) })));
-  app.querySelectorAll("[data-field]").forEach((b) => (b.onclick = () => startField(Number(b.dataset.field))));
-  app.querySelectorAll("[data-past]").forEach((b) => (b.onclick = () => startPast(b.dataset.past)));
   app.querySelector('[data-mode="mock"]').onclick = startMock;
+  const ep = app.querySelector('[data-mode="episode"]');
+  if (ep) ep.onclick = startEpisode;
   const rv = app.querySelector('[data-mode="review"]');
-  if (rv) rv.onclick = () => startSession("review", "🔁 今日の復習", shuffle(reviewQuestions()));
-  app.querySelector("#examDate").onchange = (e) => {
-    progress.examDate = e.target.value || null;
+  if (rv) rv.onclick = () => startSession("review", "🧹 後始末", shuffle(reviewQuestions()).slice(0, REVIEW_MAX));
+  app.querySelector("#examDate").onchange = (ev) => {
+    progress.examDate = ev.target.value || null;
     save();
     render();
   };
@@ -237,42 +221,6 @@ function countUp() {
   requestAnimationFrame(step);
 }
 
-const chapterHtml = (c) => `<article class="card text">
-  <div class="eyebrow">${ICONS[c.id]} 第${c.id}章</div>
-  <h1>${c.title}</h1>
-  <p class="goal"><b>🎯 この章のゴール:</b> ${c.goal}</p>
-  ${c.body}
-</article>`;
-
-// テキストの表を横スクロールにし、用語に下線を付ける（この章で太字にして説明している用語は、そばに説明があるので付けない）
-function decorateText(root) {
-  wrapTables(root);
-  const text = root.querySelector(".text");
-  const bold = [...text.querySelectorAll("b")].map((b) => b.textContent);
-  linkTerms(text, new Set(TERMS.filter((t) => bold.some((b) => b.includes(t)))));
-  // 太字や表の1列目で説明している略語は、タップできないので正式名称を添える（各用語の最初の1か所だけ）
-  const shown = new Set();
-  for (const el of text.querySelectorAll("b, tr > td:first-child")) {
-    const g = byTerm.get(el.textContent.trim());
-    if (!g?.en || shown.has(g.term)) continue;
-    shown.add(g.term);
-    el.insertAdjacentHTML("beforeend", ` <small class="en">${g.en}</small>`);
-  }
-}
-
-function renderChapter() {
-  const c = chapters[view.id - 1];
-  app.innerHTML = `
-<button class="back" id="home">← ホーム</button>
-${chapterHtml(c)}
-<div class="row"><button class="primary" id="quiz">✏️ 確認テストを受ける（${QUIZ_SIZE}問）</button>
-${progress.passed[c.id] ? '<span class="badge">合格済み</span>' : ""}</div>`;
-  decorateText(app);
-  app.querySelector("#home").onclick = () => go({ name: "home" });
-  app.querySelector("#quiz").onclick = () =>
-    startSession("quiz", `${ICONS[c.id]} 第${c.id}章 確認テスト`, shuffle(poolOf(c.id)).slice(0, QUIZ_SIZE), { chapterId: c.id });
-}
-
 function questionHtml(q, picked, reveal) {
   return `
 ${q.scenario ? `<div class="scenario">${q.scenario}</div>` : ""}
@@ -289,6 +237,19 @@ ${q.exam ? `<p class="src">出典：${examTitle.get(q.exam)} 問${q.no}${q.modif
 </ol>`;
 }
 
+// 解答後の表示: 判定 → 決め手の1文 → 「くわしく」（解説の全文）。論点のない問題は解説をそのまま出す
+function explainHtml(q, ok, s) {
+  const p = pointOf.get(q.id);
+  const verdict = s.kind === "episode"
+    ? (ok ? "🛡️ 防いだ！" : `💥 被害が出た…（正解は ${LABELS[q.answer]}）`)
+    : (ok ? "⭕ 正解！" : `❌ 不正解（正解は ${LABELS[q.answer]}）`);
+  return `<div class="explain ${ok ? "ok" : "ng"}">
+  <div class="verdict ${ok ? "ok" : "ng"}">${verdict}</div>
+  ${p ? `<p class="hook"><b>🔑 ${p.title}</b><br>${p.hook}</p><details><summary>くわしく</summary><p>${q.explanation}</p></details>` : `<p>${q.explanation}</p>`}
+  ${s.queuedAt === s.i ? '<p class="retry">↓ 同じ論点の問題で取り返そう</p>' : ""}
+</div>`;
+}
+
 function renderSession() {
   const s = view;
   const q = s.questions[s.i];
@@ -297,30 +258,31 @@ function renderSession() {
   const reveal = !mock && s.revealed;
   const ok = picked === q.answer;
   const answeredCount = s.answers.filter((a) => a != null).length;
+  const isFollow = s.kind === "episode" && s.cur.follow.includes(s.i);
 
   app.innerHTML = `
 <div class="row between">
-  <button class="back" id="quit">← 中断してホームへ</button>
+  <button class="back" id="quit">← ${s.kind === "episode" ? "中断してホームへ（続きから再開できます）" : "中断してホームへ"}</button>
   ${mock ? '<span class="timer" id="timer"></span>' : s.combo >= 2 ? `<span class="combo">🔥 ${s.combo} コンボ!</span>` : ""}
 </div>
+${s.kind === "episode" && s.i === 0 ? `<section class="card intro">
+  <div class="eyebrow">📁 第${s.ep.no}話</div><h2>${s.ep.title}</h2>${s.ep.intro}</section>` : ""}
 <section class="card qcard">
   <div class="row between">
     <span class="label">${s.title}</span>
     <span class="num muted">${s.i + 1} / ${s.questions.length}</span>
   </div>
   <div class="bar"><i style="--w:${((s.i + 1) / s.questions.length) * 100}%"></i></div>
-  <div class="eyebrow">${q.chapter === 10 ? "🧩 科目B" : `${ICONS[q.chapter]} 科目A ・ 第${q.chapter}章`}${q.level === "basic" ? ' <span class="lv">基礎</span>' : ""}${q.exam ? ' <span class="lv past">過去問</span>' : ""}</div>
+  <div class="eyebrow">${isFollow ? '<span class="lv retry-tag">🔁 取り返しのチャンス</span> ' : ""}${q.chapter === 10 ? "🧩 科目B" : `${ICONS[q.chapter]} 科目A ・ 第${q.chapter}章`}${q.exam ? ' <span class="lv past">過去問</span>' : ""}</div>
   ${questionHtml(q, picked, reveal)}
-  ${reveal ? `<div class="explain ${ok ? "ok" : "ng"}">
-    <div class="verdict ${ok ? "ok" : "ng"}">${ok ? "⭕ 正解！" : `❌ 不正解（正解は ${LABELS[q.answer]}）`}</div>
-    <p>${q.explanation}</p>${readButton(q)}</div>` : ""}
+  ${reveal ? explainHtml(q, ok, s) : ""}
 </section>
 <div class="row">
   ${mock ? `<button id="prev" ${s.i === 0 ? "disabled" : ""}>前の問題</button>
             <button id="next" ${s.i === s.questions.length - 1 ? "disabled" : ""}>次の問題</button>
             <button class="primary" id="finish">試験を終了する</button>`
-    : reveal ? `<button class="primary next" id="next">${s.i === s.questions.length - 1 ? "結果を見る 🎊" : "次の問題 →"}</button>
-      ${ok ? `<button id="unsure" ${s.unsure?.has(s.i) ? "disabled" : ""}>${s.unsure?.has(s.i) ? "🤔 明日の復習に入れました" : "🤔 自信なし"}</button>` : ""}` : ""}
+    : reveal ? `<button class="primary next" id="next">${s.i === s.questions.length - 1 ? (s.kind === "episode" ? "事件の結末へ 📁" : "結果を見る 🎊") : "次の問題 →"}</button>
+      ${ok ? `<button id="unsure" ${s.unsure?.has(s.i) ? "disabled" : ""}>${s.unsure?.has(s.i) ? "🤔 明日の後始末に入れました" : "🤔 自信なし"}</button>` : ""}` : ""}
 </div>
 ${mock ? `<section class="card">
   <div class="muted">解答済み ${answeredCount} / ${s.questions.length}</div>
@@ -330,7 +292,7 @@ ${mock ? `<section class="card">
     <div class="row"><button class="primary" id="yes">終了して採点する</button><button id="no">試験に戻る</button></div></div>` : ""}
 </section>` : ""}`;
   wrapTables();
-  app.querySelectorAll(".explain").forEach((e) => linkTerms(e));
+  app.querySelectorAll(".explain, .intro").forEach((e) => linkTerms(e));
 
   app.querySelector("#quit").onclick = () => go({ name: "home" });
   app.querySelectorAll("[data-pick]").forEach((b) => (b.onclick = () => pick(Number(b.dataset.pick))));
@@ -363,7 +325,8 @@ ${mock ? `<section class="card">
     if (s.justAnswered) {
       s.justAnswered = false;
       if (ok) burst(app.querySelector(".choice.correct"));
-      app.querySelector(".explain").scrollIntoView({ block: "nearest", behavior: reducedMotion() ? "auto" : "smooth" });
+      // 片手でもすぐ押せるよう、解説と「次へ」が両方見える位置まで送る
+      app.querySelector("#next").scrollIntoView({ block: "end", behavior: reducedMotion() ? "auto" : "smooth" });
     }
   }
 }
@@ -406,12 +369,28 @@ function pick(k) {
   s.justAnswered = true;
   s.combo = ok ? s.combo + 1 : 0;
   record(q, ok);
-  if (s.resumeKey) {
-    if (s.i + 1 < s.questions.length) progress.resume[s.resumeKey] = { ids: s.questions.map((x) => x.id), n: s.i + 1 };
-    else delete progress.resume[s.resumeKey];
-  }
+  if (s.kind === "episode") answerEpisode(s, q, ok);
   save();
   render();
+}
+
+// 話の1問ごとの記録。本来の問題を間違えたら、同じ論点の取り返し問題を次に差し込む（取り返し問題で間違えても重ねない）
+function answerEpisode(s, q, ok) {
+  const c = s.cur;
+  const p = pointOf.get(q.id);
+  const isFollow = c.follow.includes(s.i);
+  if (!isFollow) c.first[q.id] = ok;
+  if (ok && p && !c.learned.includes(p.id)) c.learned.push(p.id);
+  if (!ok && !isFollow && p) {
+    const f = followUp(p, new Set(c.ids), progress.stats, inEpisodes);
+    if (f) {
+      c.ids.splice(s.i + 1, 0, f);
+      c.follow.push(s.i + 1);
+      s.questions.splice(s.i + 1, 0, byId.get(f));
+      s.queuedAt = s.i;
+    }
+  }
+  c.i = s.i + 1;
 }
 
 function finishSession() {
@@ -422,25 +401,28 @@ function finishSession() {
     s.questions.forEach((q, k) => record(q, answers[k] === q.answer));
     progress.exams = [...progress.exams, { date: new Date().toISOString(), score: result.score }].slice(-MAX_EXAMS);
   }
-  if (s.kind === "quiz" && isQuizPassed(result.correct, result.total)) progress.passed[s.chapterId] = true;
+  let episode = null;
+  if (s.kind === "episode") {
+    const firsts = Object.values(s.cur.first);
+    const rate = firsts.filter(Boolean).length / firsts.length;
+    episode = { rate, before: s.cur.before, after: score(), learned: s.cur.learned };
+    progress.ep.results[s.ep.no] = rate;
+    progress.ep.next = Math.max(progress.ep.next, s.ep.no + 1);
+    progress.ep.cur = null;
+  }
   save();
-  go({ name: "result", session: s, answers, result });
+  go({ name: "result", session: s, answers, result, episode });
 }
 
 function renderResult() {
-  const { session: s, answers, result: r } = view;
+  const { session: s, answers, result: r, episode } = view;
+  if (episode) return renderEpisodeResult(s, episode);
   const wrong = s.questions.map((q, k) => ({ q, a: answers[k] })).filter((x) => x.a !== x.q.answer);
   const rate = Math.round((r.correct / r.total) * 100);
-  let headline;
-  if (s.kind === "quiz") {
-    const ok = isQuizPassed(r.correct, r.total);
-    headline = `<div class="result-emoji">${ok ? "🎉" : "💪"}</div><div class="verdict ${ok ? "ok" : "ng"}">${ok ? "合格！ この章はクリアです" : "あと少し！ テキストを見直して再挑戦しよう"}</div>`;
-  } else if (s.kind === "mock") {
-    headline = `<div class="result-emoji">${r.passed ? "🏆" : "📈"}</div><div class="score num">${r.score}<small> / 1000点</small></div>
-      <div class="verdict ${r.passed ? "ok" : "ng"}">${r.passed ? "合格圏（600点以上）！" : "合格目安は600点。弱い分野を伸ばそう"}</div>`;
-  } else {
-    headline = `<div class="result-emoji">${rate >= 80 ? "🌟" : rate >= 60 ? "👍" : "💪"}</div><div class="verdict">${rate >= 80 ? "すばらしい！" : rate >= 60 ? "いい調子！" : "間違えた問題は、明日の復習に出てきます"}</div>`;
-  }
+  const headline = s.kind === "mock"
+    ? `<div class="result-emoji">${r.passed ? "🏆" : "📈"}</div><div class="score num">${r.score}<small> / 1000点</small></div>
+      <div class="verdict ${r.passed ? "ok" : "ng"}">${r.passed ? "合格圏（600点以上）！" : "合格目安は600点。間違えた問題は後始末に出てきます"}</div>`
+    : `<div class="result-emoji">${rate >= 80 ? "🌟" : rate >= 60 ? "👍" : "💪"}</div><div class="verdict">${rate >= 80 ? "すばらしい！" : rate >= 60 ? "いい調子！" : "間違えた問題は、明日の後始末に出てきます"}</div>`;
 
   app.innerHTML = `
 <button class="back" id="home">← ホーム</button>
@@ -454,26 +436,44 @@ function renderResult() {
   </table></div>` : ""}
 </section>
 ${wrong.length ? `<section class="card"><h2>間違えた問題（${wrong.length}問）</h2>
-  <p class="muted small">明日の「今日の復習」にもう一度出てきます。</p>
+  <p class="muted small">明日の「後始末」にもう一度出てきます。</p>
   ${wrong.map(({ q, a }) => `<details>
     <summary>${q.chapter === 10 ? "🧩 科目B" : `${ICONS[q.chapter]} 第${q.chapter}章`}: ${q.question.replace(/<[^>]+>/g, " ").slice(0, 60)}…</summary>
     ${questionHtml(q, a, true)}
-    <div class="explain"><p>あなたの解答: ${a == null ? "未解答" : LABELS[a]} / 正解: ${LABELS[q.answer]}</p><p>${q.explanation}</p></div>
+    <div class="explain"><p>あなたの解答: ${a == null ? "未解答" : LABELS[a]} / 正解: ${LABELS[q.answer]}</p>
+    ${pointOf.has(q.id) ? `<p class="hook"><b>🔑 ${pointOf.get(q.id).title}</b><br>${pointOf.get(q.id).hook}</p>` : ""}<p>${q.explanation}</p></div>
   </details>`).join("")}</section>` : ""}
-<div class="row">
-  ${s.kind === "quiz" && !progress.passed[s.chapterId] ? '<button class="primary" id="again">テキストに戻る</button>' : ""}
-  <button id="home2">ホームへ</button>
-</div>`;
+<div class="row"><button id="home2">ホームへ</button></div>`;
   wrapTables();
   app.querySelectorAll(".explain").forEach((e) => linkTerms(e));
   app.querySelector("#home").onclick = app.querySelector("#home2").onclick = () => go({ name: "home" });
-  const again = app.querySelector("#again");
-  if (again) again.onclick = () => go({ name: "chapter", id: s.chapterId });
+}
+
+function renderEpisodeResult(s, { rate, before, after, learned }) {
+  const level = endingIndex(rate);
+  const diff = after - before;
+  app.innerHTML = `
+<button class="back" id="home">← ホーム</button>
+<section class="card result-card pop-in">
+  <div class="label">第${s.ep.no}話 ${s.ep.title}</div>
+  <div class="result-emoji">${["🎉", "😮‍💨", "💪"][level]}</div>
+  <div class="verdict ${level === 0 ? "ok" : level === 2 ? "ng" : ""}">${["事件解決！", "なんとか収束", "苦い結末…"][level]}</div>
+  <p class="ending">${s.ep.endings[level]}</p>
+  <p class="num">1回目の正答率 ${Math.round(rate * 100)}%</p>
+  <p>🏢 会社の安全度 <b class="num">${before} → ${after}</b>${diff > 0 ? ` <span class="up">（+${diff}）</span>` : ""}</p>
+</section>
+${learned.length ? `<section class="card">
+  <h2>💡 今日わかるようになったこと</h2>
+  <ul class="hooks">${learned.slice(0, LEARNED_MAX).map((id) => pointById.get(id)).filter(Boolean)
+    .map((p) => `<li><b>${p.title}</b><br>${p.hook}</li>`).join("")}</ul>
+</section>` : ""}
+<div class="row"><button class="primary" id="home2">ホームへ</button></div>`;
+  app.querySelector("#home").onclick = app.querySelector("#home2").onclick = () => go({ name: "home" });
 }
 
 // 表を横スクロール可能な枠で包む（狭い画面対策）
 function wrapTables(root = app) {
-  root.querySelectorAll(".text table, .scenario table, .qtext table").forEach((t) => {
+  root.querySelectorAll(".scenario table, .qtext table").forEach((t) => {
     if (t.parentElement.classList.contains("tablewrap")) return;
     const w = document.createElement("div");
     w.className = "tablewrap";
@@ -483,10 +483,10 @@ function wrapTables(root = app) {
 }
 
 // 用語集にある語に下線を付け、タップで意味を出せるようにする（各用語は最初の1か所だけ）
-function linkTerms(root, skip = new Set()) {
-  const used = new Set(skip);
+function linkTerms(root) {
+  const used = new Set();
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
-    acceptNode: (n) => (n.parentElement.closest("b, h1, h2, h3, th, tr > td:first-child, button, summary") ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT),
+    acceptNode: (n) => (n.parentElement.closest("h1, h2, h3, th, tr > td:first-child, button, summary, .verdict") ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT),
   });
   const nodes = [];
   while (walker.nextNode()) nodes.push(walker.currentNode);
@@ -521,68 +521,19 @@ document.addEventListener("click", (e) => {
   if (t) {
     const g = byTerm.get(t.dataset.term);
     sheet.innerHTML = `<div class="sheet-head"><b>${g.term}</b><button type="button" class="sheet-close" aria-label="閉じる">✕</button></div>
-      ${g.en ? `<small class="en">${g.en}</small>` : ""}
-      <p>${g.desc}</p><button type="button" class="read" data-read="${g.ch}" data-term="${g.term}">📖 ${chapterName(g.ch)} を読む</button>`;
+      ${g.en ? `<small class="en">${g.en}</small>` : ""}<p>${g.desc}</p>`;
     sheet.hidden = false;
   } else if (!sheet.hidden && (!sheet.contains(e.target) || e.target.closest(".sheet-close"))) {
     sheet.hidden = true;
   }
 });
 document.addEventListener("keydown", (e) => {
-  if (e.key !== "Escape") return;
-  if (!sheet.hidden) sheet.hidden = true;
-  else if (readerPushed) history.back();
+  if (e.key === "Escape" && !sheet.hidden) sheet.hidden = true;
 });
 
-// 解答画面などの上に章のテキストを重ねて開き、用語の説明の位置までスクロールする
-const reader = document.createElement("div");
-reader.className = "reader";
-reader.hidden = true;
-document.body.append(reader);
-
-function readButton(q) {
-  const t = reviewTarget(q.explanation.replace(/<[^>]+>/g, ""), glossary, q.chapter);
-  return `<button type="button" class="read" data-read="${t.ch}" data-term="${t.term ?? ""}">📖 テキストで確認（${chapterName(t.ch)}）</button>`;
-}
-
-function openReader(ch, term) {
-  reader.innerHTML = `<div class="reader-bar"><button type="button" class="back" id="reader-close">${view.name === "session" ? "← 問題に戻る" : "← 戻る"}</button></div>
-${chapterHtml(chapters[ch - 1])}`;
-  decorateText(reader);
-  reader.querySelector("#reader-close").onclick = () => history.back();
-  reader.hidden = false;
-  history.pushState(null, "");
-  readerPushed = true;
-  document.body.classList.add("reading");
-  reader.scrollTop = 0;
-  if (!term) return;
-  // 太字の説明を優先し、なければ本文中の最初の出現位置に移る
-  const text = reader.querySelector(".text");
-  const el = [...text.querySelectorAll("b")].find((b) => b.textContent.includes(term))
-    ?? [...text.querySelectorAll("p, li, td, .term")].find((e) => e.textContent.includes(term));
-  if (!el) return;
-  el.classList.add("hit");
-  el.scrollIntoView({ block: "center" });
-}
-
-function closeReader() {
-  readerPushed = false;
-  reader.hidden = true;
-  reader.innerHTML = "";
-  document.body.classList.remove("reading");
-}
-
-document.addEventListener("click", (e) => {
-  const r = e.target.closest?.("[data-read]");
-  if (!r) return;
-  sheet.hidden = true;
-  openReader(Number(r.dataset.read), r.dataset.term || null);
-});
-
-// 端末の「戻る」: テキスト表示→閉じる、他の画面→ホーム、ホーム→通常どおり終了
+// 端末の「戻る」: ホーム以外の画面→ホーム、ホーム→通常どおり終了
 window.addEventListener("popstate", () => {
-  if (readerPushed) closeReader();
-  else if (subPushed) { subPushed = false; go({ name: "home" }); }
+  if (subPushed) { subPushed = false; go({ name: "home" }); }
 });
 
 render();
