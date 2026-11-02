@@ -1,9 +1,9 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  shuffle, isQuizPassed,
+  shuffle,
   recordAnswer, MOCK_QUOTA, MOCK_A, buildMockExam, scoreExam,
-  addDays, dueIds, predictScore, streakDays, markDay, examPlan, findTerms, markUnsure, reviewTarget, resumeIds,
+  addDays, dueIds, predictScore, streakDays, markDay, examPlan, findTerms, markUnsure, followUp, endingIndex,
 } from "../web/core.js";
 
 const fixedRng = () => 0;
@@ -13,11 +13,6 @@ test("shuffle は元の配列を変えず、同じ要素を返す", () => {
   const out = shuffle(src, Math.random);
   assert.deepEqual(src, [1, 2, 3, 4]);
   assert.deepEqual([...out].sort(), [1, 2, 3, 4]);
-});
-
-test("確認テストは80%以上で合格", () => {
-  assert.equal(isQuizPassed(4, 5), true);
-  assert.equal(isQuizPassed(3, 5), false);
 });
 
 test("addDays は日付文字列に日数を足す（月・年をまたぐ）", () => {
@@ -48,7 +43,7 @@ test("dueIds は復習日が今日以前の問題を返す", () => {
   assert.deepEqual(dueIds(stats, "2026-10-07").sort(), ["a", "b"]);
 });
 
-test("predictScore は章ごとの実力を本番の配分で重み付けし、伸ばすと効く章を示す", () => {
+test("predictScore は章ごとの実力を本番の配分で重み付けする", () => {
   assert.equal(predictScore({}, [{ id: "x", chapter: 1 }]).score, 0);
   const qs = [];
   const stats = {};
@@ -64,8 +59,6 @@ test("predictScore は章ごとの実力を本番の配分で重み付けし、�
   assert.equal(r.rates[9], 5 / 20);
   // 1000 × (51 × 0.75 + 9 × 0.25) / 60
   assert.equal(r.score, Math.round((1000 * (51 * 0.75 + 9 * 0.25)) / 60));
-  assert.equal(r.focus.chapter, 9);
-  assert.equal(r.focus.gain, Math.round((1000 / 60) * 9 * (0.8 - 0.25)));
 });
 
 test("streakDays は連続日数を数え、7日に1回まで1日の休みを許す", () => {
@@ -103,8 +96,8 @@ test("模擬試験の科目A配分は本番の内訳（セキュリティ30・�
   assert.equal(sum([8, 9]), 14);
 });
 
-test("buildMockExam は本番レベルの科目A 48問 + 科目B 12問を重複なく組む", () => {
-  const qa = Array.from({ length: 216 }, (_, i) => ({ id: `a${i}`, chapter: (i % 9) + 1, level: i < 108 ? "exam" : "basic" }));
+test("buildMockExam は科目A 48問 + 科目B 12問を重複なく組む", () => {
+  const qa = Array.from({ length: 108 }, (_, i) => ({ id: `a${i}`, chapter: (i % 9) + 1 }));
   const qb = Array.from({ length: 15 }, (_, i) => ({ id: `b${i}`, chapter: 10 }));
   const exam = buildMockExam(qa, qb, fixedRng);
   assert.equal(exam.length, 60);
@@ -114,7 +107,6 @@ test("buildMockExam は本番レベルの科目A 48問 + 科目B 12問を重複�
   for (let ch = 1; ch <= 9; ch++) {
     assert.equal(exam.filter((q) => q.chapter === ch).length, MOCK_QUOTA[ch], `章${ch}`);
   }
-  assert.ok(exam.slice(0, 48).every((q) => q.level === "exam"));
 });
 
 test("scoreExam は1000点換算で600点以上を合格とし、章別に集計する", () => {
@@ -162,29 +154,26 @@ test("markUnsure は正解の記録を残したまま、習熟段階を0に戻�
   assert.equal(s1.q.box, 2);
 });
 
-const glossaryFixture = [
-  { term: "SPF", ch: 4 }, { term: "DNS", ch: 8 }, { term: "なりすまし", ch: 2 },
-];
-
-test("reviewTarget は解説に出てくる用語のうち、問題の章で扱う語を優先して開く場所を決める", () => {
-  const text = "DNS を使ったなりすましを SPF で防ぎます。";
-  assert.deepEqual(reviewTarget(text, glossaryFixture, 4), { ch: 4, term: "SPF" });
+test("followUp は同じ論点の問題から、話に入っていない未解答 → 話に入っていない → 未解答 → それ以外 の順に選ぶ", () => {
+  const point = { questions: ["a", "b", "c", "d", "e"] };
+  const used = new Set(["a"]);
+  const inEpisodes = new Set(["a", "b", "c"]);
+  assert.equal(followUp(point, used, {}, inEpisodes), "d");
+  assert.equal(followUp(point, used, { d: {} }, inEpisodes), "e");
+  assert.equal(followUp(point, used, { d: {}, e: {}, b: {} }, inEpisodes), "d");
+  assert.equal(followUp(point, new Set(["a", "d", "e"]), { b: {} }, inEpisodes), "c");
+  assert.equal(followUp(point, new Set(["a", "d", "e", "c"]), { b: {} }, inEpisodes), "b");
 });
 
-test("reviewTarget は問題の章の語がなければ、解説に最初に出てくる語の章を開く", () => {
-  assert.deepEqual(reviewTarget("DNS を使ったなりすまし", glossaryFixture, 1), { ch: 8, term: "DNS" });
+test("followUp は候補がなければ null を返す", () => {
+  assert.equal(followUp({ questions: ["a", "b"] }, new Set(["a", "b"]), {}, new Set()), null);
 });
 
-test("reviewTarget は用語が出てこなければ、問題の章の先頭を開く", () => {
-  assert.deepEqual(reviewTarget("用語なし", glossaryFixture, 3), { ch: 3, term: null });
-});
-
-test("resumeIds は解き終えた問題を除いた残りを返し、もう無い問題は飛ばす", () => {
-  const saved = { ids: ["q1", "q2", "q3", "q4"], n: 1 };
-  assert.deepEqual(resumeIds(saved, (id) => id !== "q3"), ["q2", "q4"]);
-});
-
-test("resumeIds は記録がないか、最後まで解き終えていれば null を返す", () => {
-  assert.equal(resumeIds(undefined, () => true), null);
-  assert.equal(resumeIds({ ids: ["q1", "q2"], n: 2 }, () => true), null);
+test("endingIndex は正答率 0.8以上で0、0.5以上で1、それ未満で2", () => {
+  assert.equal(endingIndex(1), 0);
+  assert.equal(endingIndex(0.8), 0);
+  assert.equal(endingIndex(0.79), 1);
+  assert.equal(endingIndex(0.5), 1);
+  assert.equal(endingIndex(0.49), 2);
+  assert.equal(endingIndex(0), 2);
 });

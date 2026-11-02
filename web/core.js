@@ -1,7 +1,5 @@
 // 画面に依存しない学習ロジック（純粋関数）
 
-export const QUIZ_SIZE = 5;
-export const PASS_RATE = 0.8;
 export const MOCK_A = 48;
 export const MOCK_B = 12;
 export const MOCK_MINUTES = 120;
@@ -16,10 +14,6 @@ export function shuffle(arr, rng = Math.random) {
     [out[i], out[j]] = [out[j], out[i]];
   }
   return out;
-}
-
-export function isQuizPassed(correct, total) {
-  return correct / total >= PASS_RATE;
 }
 
 // ---- 日付（端末の現地日付を "YYYY-MM-DD" で扱う） ----
@@ -74,12 +68,7 @@ export function predictScore(stats, questions) {
   }
   const pt = (ch, rate) => (1000 / EXAM_TOTAL) * EXAM_QUOTA[ch] * rate;
   const score = Math.round(Object.keys(EXAM_QUOTA).reduce((t, ch) => t + pt(ch, rates[ch]), 0));
-  let focus = null;
-  for (const ch in EXAM_QUOTA) {
-    const gain = Math.round(pt(ch, 0.8 - rates[ch]));
-    if (gain > 0 && (!focus || gain > focus.gain)) focus = { chapter: Number(ch), gain };
-  }
-  return { score, rates, focus };
+  return { score, rates };
 }
 
 // ---- 連続日数 ----
@@ -111,7 +100,7 @@ export function examPlan(examDate, today, unanswered) {
 
 export function buildMockExam(questionsA, questionsB, rng = Math.random) {
   const partA = Object.entries(MOCK_QUOTA).flatMap(([ch, n]) =>
-    shuffle(questionsA.filter((q) => String(q.chapter) === ch && q.level === "exam"), rng).slice(0, n),
+    shuffle(questionsA.filter((q) => String(q.chapter) === ch), rng).slice(0, n),
   );
   return [...partA, ...shuffle(questionsB, rng).slice(0, MOCK_B)];
 }
@@ -155,17 +144,15 @@ export function findTerms(text, terms, skip = new Set()) {
   return found.sort((a, b) => a.start - b.start);
 }
 
-// 解答後に見直すテキストの場所。解説に出る用語のうち問題の章で扱う語、なければ最初の語の章、なければ問題の章の先頭
-export function reviewTarget(text, glossary, chapter) {
-  const byTerm = new Map(glossary.map((g) => [g.term, g]));
-  const found = findTerms(text, glossary.map((g) => g.term)).map((f) => byTerm.get(f.term));
-  const hit = found.find((g) => g.ch === chapter) ?? found[0];
-  return hit ? { ch: hit.ch, term: hit.term } : { ch: chapter, term: null };
+// ---- 話 ----
+// 取り返し問題: 同じ論点で、まだこの話で出していない問題。どの話にも入っていない問題、未解答の問題を優先する
+export function followUp(point, used, stats, inEpisodes) {
+  const rank = (id) => (inEpisodes.has(id) ? 2 : 0) + (stats[id] ? 1 : 0);
+  const rest = point.questions.filter((id) => !used.has(id));
+  return rest.length ? rest.reduce((best, id) => (rank(id) < rank(best) ? id : best)) : null;
 }
 
-// 途中でやめた演習の残りの問題 ID（解き終えていれば null）
-export function resumeIds(saved, has) {
-  if (!saved || saved.n >= saved.ids.length) return null;
-  const ids = saved.ids.slice(saved.n).filter(has);
-  return ids.length ? ids : null;
+// 結末の段階（0 が最良）
+export function endingIndex(rate) {
+  return rate >= 0.8 ? 0 : rate >= 0.5 ? 1 : 2;
 }
