@@ -14432,13 +14432,11 @@ async function connectRemote() {
     // 読み込み中に解いていたら、その進捗（解いている途中の話を含む）を優先して db に書く
     if (snap.exists && !localChanged) {
       progress = normalize(snap.data());
-      save();
       if (view.name === "home") render();
-    } else {
-      await ref.set(progress);
     }
-    remote = ref;
-  } catch { /* db が使えなければ localStorage のみ */ }
+  } catch { return; /* db が使えなければ localStorage のみ */ }
+  remote = ref;
+  save(); // 最初の書き込みも通常の保存キューに載せ、書き込み中の変更も続けて送る
 }
 
 function record(q, correct) {
