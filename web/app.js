@@ -41,12 +41,14 @@ let progress = normalize(readLocal());
 let remote = null;
 let remoteChain = Promise.resolve();
 let remoteQueued = false;
+let localChanged = false; // db の読み込みが終わる前に解いた記録があるか
 
 function readLocal() {
   try { return JSON.parse(localStorage.getItem(KEY)); } catch { return null; }
 }
 function save() {
   try { localStorage.setItem(KEY, JSON.stringify(progress)); } catch { /* 保存できない環境では保持しない */ }
+  if (!remote) localChanged = true;
   if (!remote || remoteQueued) return;
   remoteQueued = true; // 書き込みは1件ずつ、待っている間の変更はまとめて1回で書く
   remoteChain = remoteChain.then(async () => {
@@ -62,7 +64,8 @@ async function connectRemote() {
   const ref = db.doc(`data/users/${id}/progress/main`);
   try {
     const snap = await ref.get();
-    if (snap.exists) {
+    // 読み込み中に解いていたら、その進捗（解いている途中の話を含む）を優先して db に書く
+    if (snap.exists && !localChanged) {
       progress = normalize(snap.data());
       save();
       if (view.name === "home") render();
