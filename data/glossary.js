@@ -1,6 +1,17 @@
 // 用語集。話・決め手の1文・解説の中でタップすると、一言の説明を表示する。
 
 export const glossary = [
+  // ---- 第26話で使う用語 ----
+  { term: "NIDS", en: "Network Intrusion Detection System", ja: ["ネットワーク", "侵入", "検知", "システム"], desc: "ネットワークを流れるパケットを監視し、不正侵入の試みや攻撃の兆候を管理者に通知する仕組み。" },
+  { term: "ハニーポット", en: "Honeypot", ja: ["おとりのシステム"], desc: "意図的に侵入しやすくしたおとりのシステムで、攻撃者やマルウェアの手口を観察・研究する仕組み。" },
+  { term: "LAN アナライザ", en: "LAN = Local Area Network", ja: ["構内の", "領域", "ネットワーク"], desc: "ネットワークを流れるパケットを取り込み、通信内容や障害の原因などを解析するツール。" },
+  { term: "ミラーポート", desc: "スイッチで指定したポートの通信をコピーして出力する口。監視や障害調査に使う。" },
+  { term: "監査ログ", desc: "誰がいつ何を操作したかを記録し、問題のある操作を事後に追跡・調査するためのログ。" },
+
+  // ---- 第24話で使う用語 ----
+  { term: "ステガノグラフィ", en: "Steganography", ja: ["情報の存在の秘匿"], desc: "画像や音声などのデータに別の情報を埋め込み、その情報の存在自体を隠す技術。" },
+  { term: "既知平文攻撃", en: "Known Plaintext Attack", ja: ["既知の", "平文", "攻撃"], desc: "既に分かっている平文と、それに対応する暗号文を手掛かりに、鍵などの解読を試みる攻撃。" },
+
   // ---- 第22話で使う用語 ----
   { term: "クリックジャッキング", en: "Clickjacking", ja: ["クリックの乗っ取り"], desc: "透明にした標的ページを別のページに重ね、利用者に意図しない操作をさせる攻撃。" },
   { term: "セッション固定", en: "Session Fixation", ja: ["セッション", "固定"], desc: "攻撃者が知るセッションIDを利用者に使わせ、そのままログインさせてなりすます手口。" },
@@ -122,11 +133,13 @@ export const glossary = [
   { term: "サーバ証明書", desc: "Web サーバの公開鍵と運営者を、認証局が保証する証明書。偽サイトを見分けるのに使う。" },
   { term: "ルート証明書", desc: "最上位の認証局の証明書。ブラウザなどに最初から入っていて、信頼の起点になる。" },
   { term: "CRL", en: "Certificate Revocation List", ja: ["証明書", "失効", "一覧"], desc: "証明書失効リスト。有効期限前に無効にされた証明書の一覧。" },
-  { term: "OCSP", en: "Online Certificate Status Protocol", desc: "証明書が失効していないかを、その場で問い合わせて確認する仕組み。" },
-  { term: "TLS", en: "Transport Layer Security", desc: "通信を暗号化し、サーバ証明書で相手を確認する仕組み。HTTPS で使われる。" },
-  { term: "HTTPS", en: "Hypertext Transfer Protocol Secure", desc: "TLS で暗号化した HTTP。URL が https:// で始まる。" },
-  { term: "S/MIME", en: "Secure / Multipurpose Internet Mail Extensions", desc: "証明書を使って電子メールを暗号化したり、署名を付けたりする仕組み。" },
-  { term: "IPsec", en: "Security Architecture for Internet Protocol（IP Security）", desc: "IP の通信そのものを暗号化する仕組み。拠点間の VPN でよく使う。" },
+  { term: "OCSP", en: "Online Certificate Status Protocol", ja: ["オンライン", "証明書", "状態", "プロトコル"], desc: "証明書が失効していないかを、その場で問い合わせて確認する仕組み。" },
+  { term: "TLS", en: "Transport Layer Security", ja: ["転送", "層", "セキュリティ"], desc: "通信を暗号化し、サーバ証明書で相手を確認する仕組み。HTTPS で使われる。" },
+  { term: "HTTPS", en: "Hypertext Transfer Protocol Secure", ja: ["ハイパーテキスト", "転送", "プロトコル", "安全な"], desc: "TLS で暗号化した HTTP。URL が https:// で始まる。" },
+  { term: "S/MIME", en: "Secure Multipurpose Internet Mail Extensions", ja: ["安全な", "多目的", "インターネット", "メール", "拡張"], desc: "証明書を使って電子メールを暗号化したり、署名を付けたりする仕組み。" },
+  { term: "AH", en: "Authentication Header", ja: ["認証", "ヘッダ"], desc: "IPsec の認証ヘッダ。送信元の認証と改ざん検知を行い、内容の暗号化はしない。" },
+  { term: "ESP", en: "Encapsulating Security Payload", ja: ["包み込む", "セキュリティ", "運ぶデータ"], desc: "IPsec の暗号ペイロード。暗号化に対応し、送信元の認証や改ざん検知も行える。" },
+  { term: "IPsec", en: "Internet Protocol Security", ja: ["インターネット", "プロトコル", "セキュリティ"], desc: "IP パケットを認証・暗号化などで保護する仕組み。AH と ESP を含み、拠点間通信にも使う。" },
   { term: "SSH", en: "Secure Shell", ja: ["安全な", "シェル（操作環境）"], desc: "サーバに遠隔でログインして操作するときの通信を暗号化する仕組み。" },
   { term: "WPA3", en: "Wi-Fi Protected Access 3", desc: "無線LAN の通信を暗号化する最新の方式。WPA2 の後継。" },
   { term: "多段階認証", desc: "認証を複数の段階に分けて行うこと。同じ種類の要素を繰り返す場合も含む。" },
@@ -149,7 +162,7 @@ export const glossary = [
   { term: "危殆化", desc: "解読技術の進歩や鍵の漏えいで、暗号が安全でなくなること。" },
 
   { term: "ID", en: "Identifier", ja: ["識別子"], desc: "利用者などを識別するための符号。パスワードと組み合わせて本人を確認する。" },
-  { term: "CA", en: "Certification Authority", desc: "認証局。公開鍵とその持ち主の対応を証明する電子証明書を発行する機関。" },
+  { term: "CA", en: "Certification Authority", ja: ["認証", "機関"], desc: "認証局。公開鍵とその持ち主の対応を証明する電子証明書を発行する機関。" },
   { term: "EV 証明書", en: "EV = Extended Validation", desc: "組織の実在性などを最も厳格に審査して発行するサーバ証明書。" },
   { term: "MAC", en: "Message Authentication Code（MAC アドレスの MAC は Media Access Control）", desc: "メッセージ認証コード。共通鍵で作る値で、改ざんの有無と送信者を確かめる。" },
   { term: "PGP", en: "Pretty Good Privacy", desc: "電子メールなどの暗号化と署名を行うソフトウェア。利用者どうしの信頼で公開鍵を確かめる。" },
@@ -160,10 +173,10 @@ export const glossary = [
   { term: "IC", en: "Integrated Circuit（集積回路）", ja: ["集積した", "回路"], desc: "IC カードや IC タグのチップ。情報を記録し、偽造しにくい。" },
   // ---- 第4章 技術的セキュリティ対策 ----
   { term: "ファイアウォール", desc: "IP アドレスやポート番号を見て、通信を通すか止めるかを決める仕組み。" },
-  { term: "DMZ", en: "DeMilitarized Zone", desc: "インターネットと社内LAN の間に設ける区域。公開する Web サーバなどを置く。" },
+  { term: "DMZ", en: "DeMilitarized Zone", ja: ["非", "軍事化された", "区域"], desc: "インターネットと社内LAN の間に設ける区域。公開する Web サーバなどを置く。" },
   { term: "WAF", en: "Web Application Firewall", ja: ["Web", "アプリケーション", "防火壁（ファイアウォール）"], desc: "Web アプリへの通信の中身を検査し、SQLインジェクションなどを防ぐ仕組み。" },
-  { term: "IDS", en: "Intrusion Detection System", desc: "侵入検知システム。不正な通信を見つけて知らせる（止めはしない）。" },
-  { term: "IPS", en: "Intrusion Prevention System", desc: "侵入防止システム。不正な通信を見つけて遮断まで行う。" },
+  { term: "IDS", en: "Intrusion Detection System", ja: ["侵入", "検知", "システム"], desc: "侵入検知システム。不正な通信を見つけて知らせる（止めはしない）。" },
+  { term: "IPS", en: "Intrusion Prevention System", ja: ["侵入", "防止", "システム"], desc: "侵入防止システム。不正な通信を見つけて遮断まで行う。" },
   { term: "UTM", en: "Unified Threat Management", desc: "ファイアウォールやマルウェア対策など複数の機能を1台にまとめた機器。" },
   { term: "プロキシサーバ", desc: "社内からの Web アクセスを代わりに行う中継サーバ。キャッシュや閲覧制限に使う。" },
   { term: "リバースプロキシ", desc: "外部からのアクセスを受けて、内部の Web サーバへ中継するサーバ。" },
@@ -378,7 +391,7 @@ export const glossary = [
   { term: "NAS", en: "Network Attached Storage", desc: "ネットワークに接続して使う共有ストレージ。" },
   { term: "FTP", en: "File Transfer Protocol", desc: "ファイルを転送するプロトコル。通信が暗号化されない。" },
   { term: "HTML", en: "HyperText Markup Language", desc: "Web ページの構造をタグで記述する言語。" },
-  { term: "XML", en: "Extensible Markup Language", desc: "タグを自由に定義して、データの意味と構造を表す言語。" },
+  { term: "XML", en: "Extensible Markup Language", ja: ["拡張可能な", "マーク付け", "言語"], desc: "タグを自由に定義して、データの意味と構造を表す言語。" },
   { term: "CDN", en: "Content Delivery Network", ja: ["コンテンツ", "配信", "ネットワーク"], desc: "各地のサーバにコンテンツを分散して配信する仕組み。DDoS 攻撃の緩和にも使う。" },
   { term: "FQDN", en: "Fully Qualified Domain Name", desc: "ホスト名とドメイン名を省略せずにつなげた名前（例: www.example.co.jp）。" },
   { term: "BIOS", en: "Basic Input/Output System", desc: "PC の起動時に最初に動き、ハードウェアを初期化するプログラム。" },
