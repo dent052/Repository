@@ -361,7 +361,7 @@ function renderQuestion(s, q) {
     : reveal ? `<div class="verdict">${kagi(ok ? "ok" : "ng")}<div><b>${ok ? "カチッ、守った" : "破られた…"}</b>
         <small>${ok ? `+${s.gain} XP${s.combo >= 5 ? "（5問連続以上で2倍）" : ""}` : `正解は ${LABELS[q.answer]}。明日の後始末にもう一度出ます`}</small></div></div>
       <div class="explain">${p ? `<p class="hook"><b>${p.title}</b>${p.hook}</p>` : ""}<p>${q.explanation}</p>
-        ${s.queuedAt === s.i ? '<p class="retry">次は、同じ論点の取り返しの1問です。</p>' : ""}</div>
+        ${s.queuedAt === s.i ? '<p class="retry">次は同じ論点の取り返しの1問です。</p>' : ""}</div>
       <div class="row">${ok ? `<button class="go quiet small" id="unsure" ${s.unsure?.has(s.i) ? "disabled" : ""}>${s.unsure?.has(s.i) ? "明日の後始末に入れました" : "自信なし"}</button>` : ""}
         <button class="go" id="next">${s.i === lengthOf(s) - 1 ? "結果を見る" : "次へ"}</button></div>`
     : `<button class="go" disabled>答えを選んでください</button>`}
