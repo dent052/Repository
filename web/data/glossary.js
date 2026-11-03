@@ -1,6 +1,11 @@
 // 用語集。話・決め手の1文・解説の中でタップすると、一言の説明を表示する。
 
 export const glossary = [
+  // ---- 第21話で使う用語 ----
+  { term: "SMTP-AUTH", en: "Simple Mail Transfer Protocol Authentication", ja: ["簡易な", "メール", "転送", "プロトコル", "認証"], desc: "メール送信時に、送信者側のメールサーバが利用者を認証する仕組み。" },
+  { term: "EDoS", en: "Economic Denial of Service", ja: ["経済的な", "拒否", "〜の", "サービス"], desc: "従量課金のサービスで大量のリソースを消費させ、高額な料金を負わせる攻撃。" },
+  { term: "Telnet", en: "Telnet", ja: ["遠隔端末通信"], desc: "機器を遠隔操作するための通信の決まり。通常は23番ポートを使い、通信は平文。" },
+  { term: "hosts", en: "hosts file", ja: ["ホストの対応表", "ファイル"], desc: "端末内で、ホスト名と IP アドレスの対応を記録するファイル。改ざんされると行き先が変わる。" },
   // ---- 第1章 情報セキュリティの基本 ----
   { term: "機密性", desc: "許可された人だけが情報を見られること。漏えいで損なわれる。" },
   { term: "完全性", desc: "情報が正確で、改ざんや欠けがないこと。" },
@@ -18,7 +23,7 @@ export const glossary = [
   { term: "クリアスクリーン", desc: "離席時に PC の画面をロックし、他人に見られないようにすること。" },
   { term: "内部不正", desc: "従業員や委託先など、正規の権限を持つ人による情報の持出しや不正操作。" },
   { term: "ダークウェブ", desc: "普通の検索では見つからない、匿名性の高いネット上の領域。盗んだ情報が売買される。" },
-  { term: "IoT", en: "Internet of Things", desc: "Internet of Things。カメラや家電など、ネットにつながるさまざまなモノ。" },
+  { term: "IoT", en: "Internet of Things", ja: ["インターネット", "〜の", "モノ"], desc: "Internet of Things。カメラや家電など、ネットにつながるさまざまなモノ。" },
   { term: "BYOD", en: "Bring Your Own Device", ja: ["持ってくる", "あなたの", "自分の", "機器"], desc: "Bring Your Own Device。私物のスマホや PC を業務に使うこと。" },
 
   // ---- 第2章 脅威と攻撃手法 ----
@@ -66,7 +71,7 @@ export const glossary = [
   { term: "バッファオーバーフロー", desc: "想定より長いデータを送り込み、プログラムを誤動作させる攻撃。" },
   { term: "DoS 攻撃", en: "DoS = Denial of Service", desc: "大量の通信や処理要求を送りつけ、サービスを止める攻撃。" },
   { term: "DDoS 攻撃", en: "DDoS = Distributed Denial of Service", desc: "多数の PC（ボットなど）から一斉に行う DoS 攻撃。" },
-  { term: "DDoS", en: "Distributed Denial of Service", desc: "多数の PC から一斉に大量の通信を送り、サービスを止める攻撃。" },
+  { term: "DDoS", en: "Distributed Denial of Service", ja: ["分散した", "拒否", "〜の", "サービス"], desc: "多数の PC から一斉に大量の通信を送り、サービスを止める攻撃。" },
   { term: "踏み台", desc: "攻撃者が身元を隠すため、攻撃の中継に使う他人のコンピュータ。" },
   { term: "オープンリゾルバ", desc: "誰からの DNS 問合せにも答えてしまう DNS サーバ。攻撃に悪用される。" },
   { term: "中間者攻撃", desc: "通信する二者の間に割り込み、盗聴や改ざんをする攻撃。" },
@@ -80,7 +85,7 @@ export const glossary = [
   { term: "ディープフェイク", desc: "AI で作った、本物そっくりの偽の画像・音声・動画。" },
   { term: "SNS", en: "Social Networking Service", desc: "X（旧 Twitter）や Instagram など、利用者同士が発信・交流するサービス。" },
 
-  { term: "DoS", en: "Denial of Service", desc: "大量の通信や処理要求を送りつけて、サービスを使えなくする攻撃。" },
+  { term: "DoS", en: "Denial of Service", ja: ["拒否", "〜の", "サービス"], desc: "大量の通信や処理要求を送りつけて、サービスを使えなくする攻撃。" },
   { term: "MITB", en: "Man-in-the-Browser", desc: "ブラウザを乗っ取ったマルウェアが、画面上は正しく見せたまま送金内容などを改ざんする攻撃。" },
   { term: "MITM", en: "Man-in-the-Middle", desc: "通信の間に割り込み、盗聴や改ざんをする中間者攻撃。" },
   { term: "RaaS", en: "Ransomware as a Service", desc: "ランサムウェアを攻撃者に提供し、身代金の分け前を得るサービス型の犯罪。" },
@@ -163,7 +168,7 @@ export const glossary = [
   { term: "SPF", en: "Sender Policy Framework", ja: ["送り手", "方針", "枠組み"], desc: "送信元ドメインが正規の送信サーバを DNS で公開し、なりすましメールを見分ける仕組み。" },
   { term: "DKIM", en: "DomainKeys Identified Mail", ja: ["ドメインの", "鍵", "身元を確かめた", "メール"], desc: "送信サーバがメールに電子署名を付け、受信側で改ざんやなりすましを確認する仕組み。" },
   { term: "DMARC", en: "Domain-based Message Authentication, Reporting and Conformance", ja: ["ドメインに基づく", "メッセージ", "認証", "報告", "適合（決まりに従う）"], desc: "SPF・DKIM で確認できなかったメールの扱い（隔離・拒否など）を送信側が宣言する仕組み。" },
-  { term: "OP25B", en: "Outbound Port 25 Blocking", desc: "プロバイダが、利用者から外部への直接のメール送信（25番ポート）を止める迷惑メール対策。" },
+  { term: "OP25B", en: "Outbound Port 25 Blocking", ja: ["外向きの", "ポート", "25番", "遮断"], desc: "プロバイダが、利用者から外部への直接のメール送信（25番ポート）を止める迷惑メール対策。" },
   { term: "SIEM", en: "Security Information and Event Management", ja: ["セキュリティ", "情報", "出来事（イベント）", "管理"], desc: "いろいろな機器のログを集めて関連づけて分析し、攻撃の兆候を見つける仕組み。" },
   { term: "ログ", desc: "システムの操作や通信の記録。不正の発見や原因の調査に使う。" },
   { term: "脆弱性診断", desc: "システムに既知の脆弱性がないかを、ツールや手作業で調べること。" },
@@ -306,7 +311,7 @@ export const glossary = [
   { term: "サブネットマスク", desc: "IP アドレスのうち、どこまでがネットワーク部分かを示す値。" },
   { term: "ネットワークアドレス", desc: "IP アドレスとサブネットマスクから求める、ネットワークそのものを表すアドレス。" },
   { term: "DNS", en: "Domain Name System", ja: ["ドメイン", "名前", "仕組み"], desc: "ドメイン名（example.jp など）と IP アドレスを対応付ける仕組み。" },
-  { term: "DNSSEC", en: "DNS Security Extensions", desc: "DNS の応答に電子署名を付け、偽の応答を見分けられるようにする仕組み。" },
+  { term: "DNSSEC", en: "DNS Security Extensions", ja: ["ドメイン名システム", "セキュリティ", "拡張"], desc: "DNS の応答に電子署名を付け、偽の応答を見分けられるようにする仕組み。" },
   { term: "DHCP", en: "Dynamic Host Configuration Protocol", ja: ["動的な", "ホスト", "構成（設定）", "プロトコル"], desc: "ネットワークにつないだ機器に、IP アドレスなどの設定を自動で配る仕組み。" },
   { term: "NTP", en: "Network Time Protocol", ja: ["ネットワーク", "時刻", "通信の決まり（プロトコル）"], desc: "ネットワーク上の機器の時刻を合わせる仕組み。ログの時刻をそろえるのに重要。" },
   { term: "ARP", en: "Address Resolution Protocol", ja: ["アドレス", "解決", "プロトコル"], desc: "IP アドレスから、その機器の MAC アドレスを調べる仕組み。" },
@@ -363,7 +368,7 @@ export const glossary = [
   { term: "FTP", en: "File Transfer Protocol", desc: "ファイルを転送するプロトコル。通信が暗号化されない。" },
   { term: "HTML", en: "HyperText Markup Language", desc: "Web ページの構造をタグで記述する言語。" },
   { term: "XML", en: "Extensible Markup Language", desc: "タグを自由に定義して、データの意味と構造を表す言語。" },
-  { term: "CDN", en: "Content Delivery Network", desc: "各地のサーバにコンテンツを分散して配信する仕組み。DDoS 攻撃の緩和にも使う。" },
+  { term: "CDN", en: "Content Delivery Network", ja: ["コンテンツ", "配信", "ネットワーク"], desc: "各地のサーバにコンテンツを分散して配信する仕組み。DDoS 攻撃の緩和にも使う。" },
   { term: "FQDN", en: "Fully Qualified Domain Name", desc: "ホスト名とドメイン名を省略せずにつなげた名前（例: www.example.co.jp）。" },
   { term: "BIOS", en: "Basic Input/Output System", desc: "PC の起動時に最初に動き、ハードウェアを初期化するプログラム。" },
   { term: "DB", en: "Database", desc: "データベース。データを整理して蓄積し、検索・更新できるようにしたもの。" },
