@@ -237,7 +237,7 @@ export const glossary = [
   { term: "SOC", en: "Security Operation Center", ja: ["セキュリティ", "運用", "センター"], desc: "ネットワークや機器を24時間監視し、攻撃を見つけて分析する組織。" },
   { term: "CISO", en: "Chief Information Security Officer", ja: ["最高", "情報", "セキュリティ", "責任者"], desc: "最高情報セキュリティ責任者。組織の情報セキュリティを統括する経営陣の一員。" },
   { term: "JPCERT/CC", en: "Japan Computer Emergency Response Team Coordination Center", desc: "国内のインシデントの報告受付や対応支援、脆弱性情報の調整を行う組織。" },
-  { term: "IPA", en: "Information-technology Promotion Agency, Japan（情報処理推進機構）", desc: "情報処理推進機構。ウイルス等の届出受付、脆弱性情報の公開、この試験の実施を担う。" },
+  { term: "IPA", en: "Innovation Platform Agency, Japan（情報処理推進機構。2026年6月までの英語名は Information-technology Promotion Agency, Japan）", desc: "情報処理推進機構。ウイルス等の届出受付、脆弱性情報の公開、この試験の実施を担う。" },
   { term: "JVN", en: "Japan Vulnerability Notes", ja: ["日本の", "脆弱性", "情報（ノート）"], desc: "国内で使われるソフトウェアの脆弱性情報と対策を公開しているサイト。" },
   { term: "CVSS", en: "Common Vulnerability Scoring System", ja: ["共通の", "脆弱性", "採点", "方式"], desc: "脆弱性の深刻度を 0.0〜10.0 の点数で評価する共通の基準。" },
   { term: "CVE", en: "Common Vulnerabilities and Exposures", ja: ["共通の", "脆弱性", "露出（さらされた弱点）"], desc: "個々の脆弱性に付けられる、世界共通の識別番号。" },
