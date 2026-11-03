@@ -1,6 +1,14 @@
 // 用語集。話・決め手の1文・解説の中でタップすると、一言の説明を表示する。
 
 export const glossary = [
+  // ---- 第30話で使う用語 ----
+  { term: "ギャップ分析", en: "Gap Analysis", ja: ["差", "分析"], desc: "基準となる望ましい対策と現状を比較し、不足や差を明らかにする分析。" },
+  { term: "セキュア OS", en: "Secure Operating System", ja: ["安全な", "動作させる", "システム"], desc: "管理者の方針による強制的なアクセス制御や、管理者特権の分割などで保護を強化した基本ソフト。" },
+  { term: "割れ窓理論", en: "Broken Windows Theory", ja: ["割れた", "窓", "理論"], desc: "軽微な不正や犯罪を放置すると、より大きな不正や犯罪を招くという考え方。" },
+  { term: "パスワード管理アプリ", en: "Password Manager", ja: ["パスワード", "管理するもの"], desc: "サービスごとのパスワードを保護して保存するアプリ。信頼できるものを本人だけが使える状態で利用する。" },
+  { term: "懲戒手続", en: "Disciplinary Process", ja: ["懲戒の", "手続"], desc: "違反の事実を確認した上で、公平に段階的な対応を行うために定め、周知する手続。" },
+  { term: "棚卸し", en: "Inventory Review", ja: ["一覧", "見直し"], desc: "実際の利用者や権限などを基準となる名簿・職務と照合し、不要なものや不一致を見つける点検。" },
+
   // ---- 第29話で使う用語 ----
   { term: "JIS Q 27014", en: "JIS = Japanese Industrial Standards", ja: ["日本の", "産業の", "規格"], desc: "情報セキュリティガバナンスの概念や目的、経営陣による統治の進め方を示す規格。" },
   { term: "情報セキュリティガバナンス", en: "Information Security Governance", ja: ["情報", "セキュリティ", "統治"], desc: "経営陣が情報セキュリティを評価し、方向付け、監視することで、組織を統治する仕組み。" },
@@ -123,14 +131,14 @@ export const glossary = [
   { term: "BEC", en: "Business Email Compromise", ja: ["仕事・取引の", "電子メール", "侵害・悪用"], desc: "Business Email Compromise。ビジネスメール詐欺のこと。" },
   { term: "SEOポイズニング", en: "SEO = Search Engine Optimization", ja: ["検索", "エンジン", "最適化"], desc: "検索結果の上位に悪意のあるサイトが出るよう細工して誘導する攻撃。" },
   { term: "ディープフェイク", desc: "AI で作った、本物そっくりの偽の画像・音声・動画。" },
-  { term: "SNS", en: "Social Networking Service", desc: "X（旧 Twitter）や Instagram など、利用者同士が発信・交流するサービス。" },
+  { term: "SNS", en: "Social Networking Service", ja: ["社会的な", "つながりを作る", "サービス"], desc: "X（旧 Twitter）や Instagram など、利用者同士が発信・交流するサービス。" },
 
   { term: "DoS", en: "Denial of Service", ja: ["拒否", "〜の", "サービス"], desc: "大量の通信や処理要求を送りつけて、サービスを使えなくする攻撃。" },
   { term: "MITB", en: "Man-in-the-Browser", ja: ["人（攻撃者）", "〜の中に", "その", "ブラウザ"], desc: "ブラウザを乗っ取ったマルウェアが、画面上は正しく見せたまま送金内容などを改ざんする攻撃。" },
   { term: "MITM", en: "Man-in-the-Middle", ja: ["人（攻撃者）", "〜に", "その", "中間"], desc: "通信の間に割り込み、盗聴や改ざんをする中間者攻撃。" },
   { term: "RaaS", en: "Ransomware as a Service", desc: "ランサムウェアを攻撃者に提供し、身代金の分け前を得るサービス型の犯罪。" },
   { term: "RLO", en: "Right-to-Left Override", desc: "文字の並びを右から左に表示させる制御文字。拡張子を偽装し、実行ファイルを文書などに見せかける手口に悪用される。" },
-  { term: "SMS", en: "Short Message Service", desc: "電話番号あてに短い文を送る仕組み。偽の SMS で誘導するスミッシングに悪用される。" },
+  { term: "SMS", en: "Short Message Service", ja: ["短い", "メッセージ", "サービス"], desc: "電話番号あてに短い文を送る仕組み。偽の SMS で誘導するスミッシングに悪用される。" },
   // ---- 第3章 暗号と認証 ----
   { term: "暗号化", desc: "鍵を使ってデータを第三者に読めない形に変えること。元に戻すのが復号。" },
   { term: "共通鍵暗号", desc: "暗号化と復号に同じ鍵を使う方式。速いが、鍵を安全に渡すのが課題。AES など。" },
@@ -315,6 +323,14 @@ export const glossary = [
   { term: "NCO", en: "National Cybersecurity Office", ja: ["国家", "サイバーセキュリティ", "室（オフィス）"], desc: "国家サイバー統括室。内閣官房に置かれ、政府のサイバーセキュリティ政策の司令塔を担う。" },
   { term: "BCM", en: "Business Continuity Management", desc: "事業継続マネジメント。BCP の策定・訓練・見直しを継続的に行う取組。" },
   // ---- 第7章 法務と標準・ガイドライン ----
+  { term: "電子計算機損壊等業務妨害罪", desc: "コンピュータやデータの損壊、不正な指令などで、本来の動作を妨げ業務を妨害する罪。" },
+  { term: "電子計算機使用詐欺罪", desc: "虚偽の情報や不正な指令で不実の財産記録を作らせ、財産上の不法な利益を得る罪。" },
+  { term: "不正指令電磁的記録", desc: "使用者の意図に沿う動作をさせず、又は意図に反する動作をさせる不正なプログラムなどの記録。" },
+  { term: "識別符号", desc: "アクセス管理者が利用権者を他の利用者と区別するために用いる、パスワードなどの符号。" },
+  { term: "プロバイダ責任制限法", desc: "情報流通プラットフォーム対処法の旧称。権利侵害情報に関する賠償責任の制限などを定めた。" },
+  { term: "情報流通プラットフォーム対処法", desc: "投稿の権利侵害に関する賠償責任の制限と発信者情報開示、大規模事業者の対応義務を定める。" },
+  { term: "発信者情報の開示", desc: "ネット上で権利を侵害された者が、一定の要件で投稿者の特定に必要な情報を求める仕組み。" },
+  { term: "サイバーセキュリティ戦略本部", desc: "サイバーセキュリティ基本法に基づき内閣に置かれ、戦略案の作成や施策の総合調整を担う。" },
   { term: "不正アクセス禁止法", desc: "他人の ID・パスワードの無断使用や、その不正な取得・提供などを禁止する法律。" },
   { term: "個人情報保護法", desc: "個人情報を扱う事業者に、利用目的の特定や安全管理などのルールを定めた法律。" },
   { term: "個人情報", desc: "生存する個人に関する情報で、特定の個人を識別できるもの。" },
@@ -337,7 +353,8 @@ export const glossary = [
   { term: "電子署名法", desc: "本人による一定の電子署名がある電子文書は、本人が作成したと推定されると定めた法律。" },
   { term: "サイバーセキュリティ基本法", desc: "サイバーセキュリティの基本理念と、国・事業者・国民の責務などを定めた法律。" },
   { term: "公益通報者保護法", desc: "勤務先の法令違反を通報した人を、解雇などの不利益から守る法律。" },
-  { term: "GDPR", en: "General Data Protection Regulation", desc: "EU の個人データ保護の規則。EU 域外の事業者にも適用されることがある。" },
+  { term: "GDPR", en: "General Data Protection Regulation", ja: ["一般的な", "データ", "保護", "規則"], desc: "EU の個人データ保護の規則。EU 域外の事業者にも適用されることがある。" },
+  { term: "EU", en: "European Union", ja: ["欧州の", "連合"], desc: "欧州連合。加盟国が経済や社会などの分野で共通の制度を作る枠組み。" },
   { term: "努力義務", desc: "「〜するよう努めなければならない」という義務。守らなくても罰則はない。" },
   { term: "NDA", en: "Non-Disclosure Agreement", desc: "秘密保持契約。取引先などとの間で、開示する秘密情報を守ることを約束する契約。" },
 
@@ -346,7 +363,7 @@ export const glossary = [
   { term: "IEC", en: "International Electrotechnical Commission", ja: ["国際", "電気標準", "会議"], desc: "国際電気標準会議。電気・電子技術の国際規格を作る。" },
   { term: "IEEE", en: "Institute of Electrical and Electronics Engineers", desc: "米国に本部がある電気・電子分野の学会。無線 LAN などの規格を作る。" },
   { term: "NICT", en: "National Institute of Information and Communications Technology", desc: "情報通信研究機構。CRYPTREC の事務局などを務める。" },
-  { term: "OECD", en: "Organisation for Economic Co-operation and Development", desc: "経済協力開発機構。プライバシー保護の 8 原則を示した。" },
+  { term: "OECD", en: "Organisation for Economic Co-operation and Development", ja: ["機構", "経済の", "協力", "開発"], desc: "経済協力開発機構。プライバシー保護の 8 原則を示した。" },
   { term: "PIA", en: "Privacy Impact Assessment", desc: "個人情報を扱うシステムの導入前に、プライバシーへの影響を評価する取組。" },
   { term: "FISC", en: "The Center for Financial Industry Information Systems", desc: "金融情報システムセンター。金融機関向けの安全対策基準を作る。" },
   { term: "JISEC", en: "Japan Information Technology Security Evaluation and Certification Scheme", desc: "ISO/IEC 15408 に基づき、IT 製品のセキュリティ機能を評価・認証する日本の制度。" },
