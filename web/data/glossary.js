@@ -1,6 +1,28 @@
 // 用語集。話・決め手の1文・解説の中でタップすると、一言の説明を表示する。
 
 export const glossary = [
+  // ---- 第29話で使う用語 ----
+  { term: "JIS Q 27014", en: "JIS = Japanese Industrial Standards", ja: ["日本の", "産業の", "規格"], desc: "情報セキュリティガバナンスの概念や目的、経営陣による統治の進め方を示す規格。" },
+  { term: "情報セキュリティガバナンス", en: "Information Security Governance", ja: ["情報", "セキュリティ", "統治"], desc: "経営陣が情報セキュリティを評価し、方向付け、監視することで、組織を統治する仕組み。" },
+  { term: "リスク登録簿", en: "Risk Register", ja: ["リスク", "登録簿"], desc: "特定したリスク、分析・評価の結果、対応策、リスク所有者などを一覧にして管理する文書。" },
+  { term: "リスク受容基準", en: "Risk Acceptance Criteria", ja: ["リスク", "受容", "基準"], desc: "どのようなリスクを受け入れるかを判断するために、アセスメントの前に決める基準。" },
+
+  // ---- 第28話で使う用語 ----
+  { term: "セキュリティバイデザイン", en: "Security by Design", ja: ["セキュリティ", "による", "設計"], desc: "完成後に対策を足すだけでなく、企画・設計の段階からセキュリティを組み込む考え方。" },
+  { term: "セキュアプログラミング", en: "Secure Programming", ja: ["安全な", "プログラミング"], desc: "入力の検証など、脆弱性を作り込まないための対策を実装に組み込むこと。" },
+
+  // ---- 第27話で使う用語 ----
+  { term: "パターンマッチング法", en: "Pattern Matching Method", ja: ["パターン", "照合", "方法"], desc: "既知のマルウェアの特徴的なコードなどと、検査対象を照合して検出する方法。" },
+  { term: "ビヘイビア法", en: "Behavior-based Detection", ja: ["振る舞いに基づく", "検出"], desc: "検査対象を実際に動作させ、不審な振る舞いを監視してマルウェアを検出する方法。" },
+  { term: "ヒューリスティック法", en: "Heuristic Detection", ja: ["経験則による", "検出"], desc: "マルウェア特有の命令や構造などから、不正なプログラムか推定する検出方法。" },
+  { term: "コンペア法", en: "Compare Method", ja: ["比較", "方法"], desc: "検査対象を安全な場所に保管した原本と比較し、違いから感染などを疑う方法。" },
+  { term: "チェックサム法", en: "Checksum Method", ja: ["検査用の値", "方法"], desc: "事前に求めたチェックサムと検査時の値を比較し、ファイルの変化を検出する方法。" },
+  { term: "静的解析", en: "Static Analysis", ja: ["静的な", "解析"], desc: "検体を実行せず、コードやファイルの構造などを調べて機能を分析する方法。" },
+  { term: "動的解析", en: "Dynamic Analysis", ja: ["動的な", "解析"], desc: "隔離した環境で検体を実行し、動作や通信などの振る舞いを観測する分析方法。" },
+  { term: "セキュアブート", en: "Secure Boot", ja: ["安全な", "起動"], desc: "起動時にソフトウェアの署名を検証し、許可されていないものを実行させない仕組み。" },
+  { term: "許可リスト", en: "Allowlist", ja: ["許可する対象の一覧"], desc: "許可する対象を登録した一覧。アプリの実行制御では、登録したもの以外を実行させない。" },
+  { term: "定義ファイル", en: "Definition File", ja: ["定義", "ファイル"], desc: "既知のマルウェアの特徴を収録したデータ。対策ソフトの照合に使い、更新を続ける。" },
+
   // ---- 第26話で使う用語 ----
   { term: "NIDS", en: "Network Intrusion Detection System", ja: ["ネットワーク", "侵入", "検知", "システム"], desc: "ネットワークを流れるパケットを監視し、不正侵入の試みや攻撃の兆候を管理者に通知する仕組み。" },
   { term: "ハニーポット", en: "Honeypot", ja: ["おとりのシステム"], desc: "意図的に侵入しやすくしたおとりのシステムで、攻撃者やマルウェアの手口を観察・研究する仕組み。" },
@@ -49,8 +71,8 @@ export const glossary = [
   { term: "ランサムウェア", desc: "ファイルを暗号化して使えなくし、元に戻す代わりに身代金を要求するマルウェア。" },
   { term: "ボットネット", desc: "マルウェアに感染して遠隔操作される多数の PC の集まり。DDoS 攻撃などに使われる。" },
   { term: "ボット", desc: "感染した PC を、攻撃者が外部から遠隔操作できるようにするマルウェア。" },
-  { term: "C&C サーバ", en: "C&C = Command and Control", desc: "攻撃者が、感染した PC に指令を送ったり盗んだ情報を受け取ったりするサーバ。" },
-  { term: "C&C", en: "Command and Control", desc: "Command and Control。感染した PC を遠隔操作するための指令の仕組み。" },
+  { term: "C&C サーバ", en: "C&C = Command and Control", ja: ["指令", "と", "制御"], desc: "攻撃者が、感染した PC に指令を送ったり盗んだ情報を受け取ったりするサーバ。" },
+  { term: "C&C", en: "Command and Control", ja: ["指令", "と", "制御"], desc: "Command and Control。感染した PC を遠隔操作するための指令の仕組み。" },
   { term: "ルートキット", desc: "侵入の痕跡やマルウェアの存在を隠すためのツール群。" },
   { term: "バックドア", desc: "攻撃者が後から再び侵入できるように仕掛けた裏口。" },
   { term: "トロイの木馬", desc: "便利なソフトを装って侵入し、裏で不正な動作をするマルウェア。自分では増えない。" },
@@ -183,7 +205,7 @@ export const glossary = [
   { term: "VPN", en: "Virtual Private Network", ja: ["仮想の", "専用の", "ネットワーク"], desc: "インターネット上に暗号化した仮想の専用線を作り、安全に社内へつなぐ仕組み。" },
   { term: "検疫ネットワーク", desc: "社内LAN につなぐ前に PC を検査し、問題があれば隔離して直させる仕組み。" },
   { term: "NAT", en: "Network Address Translation", ja: ["ネットワーク", "アドレス", "変換"], desc: "社内用の IP アドレスとインターネット用の IP アドレスを変換する仕組み。" },
-  { term: "EDR", en: "Endpoint Detection and Response", desc: "PC の動きを常に記録・監視し、侵入後の不審な動きを見つけて対処を助ける仕組み。" },
+  { term: "EDR", en: "Endpoint Detection and Response", ja: ["端末", "検知", "対応"], desc: "PC の動きを常に記録・監視し、侵入後の不審な動きを見つけて対処を助ける仕組み。" },
   { term: "MDM", en: "Mobile Device Management", ja: ["モバイル", "機器", "管理"], desc: "会社のスマホを一括管理する仕組み。紛失時に遠隔でロックや消去ができる。" },
   { term: "サンドボックス", desc: "隔離した環境で怪しいファイルを動かし、挙動を観察する仕組み。" },
   { term: "パッチ", desc: "ソフトウェアの不具合や脆弱性を直す修正プログラム。" },
@@ -201,7 +223,7 @@ export const glossary = [
   { term: "プレースホルダ", desc: "SQL 文の中に入力値の置き場所を用意しておく方式。SQLインジェクション対策の基本。" },
   { term: "エスケープ処理", desc: "特別な意味を持つ記号を、ただの文字として扱われる形に置き換えること。XSS 対策。" },
   { term: "DLP", en: "Data Loss Prevention", ja: ["データ", "損失・流出", "防止"], desc: "機密情報を見分けて、メール送信や USB へのコピーによる持出しを止める仕組み。" },
-  { term: "VDI", en: "Virtual Desktop Infrastructure", desc: "サーバ上の仮想のデスクトップを、手元の端末から画面転送で使う仕組み。" },
+  { term: "VDI", en: "Virtual Desktop Infrastructure", ja: ["仮想の", "デスクトップ", "基盤"], desc: "サーバ上の仮想のデスクトップを、手元の端末から画面転送で使う仕組み。" },
   { term: "アンチパスバック", desc: "入室の記録がない IC カードでは退室できないようにする仕組み。共連れを防ぐ。" },
   { term: "インターロックゲート", desc: "二重扉の片方が閉まらないともう片方が開かない、1人ずつしか通れない入口。" },
   { term: "SBOM", en: "Software Bill of Materials", desc: "ソフトウェアを構成する部品（オープンソースなど）の一覧。脆弱性の影響調査に使う。" },
@@ -376,12 +398,12 @@ export const glossary = [
   { term: "RAID", en: "Redundant Arrays of Independent Disks", ja: ["冗長な", "配列", "独立した", "ディスク"], desc: "複数のディスクを組み合わせ、速さや故障への強さを高める技術。" },
   { term: "UPS", en: "Uninterruptible Power Supply", ja: ["止まらない", "電源", "供給"], desc: "無停電電源装置。停電時にしばらく電気を供給し、安全に停止させる。" },
   { term: "クラウドサービス", desc: "サーバやソフトを自社で持たず、インターネット経由で借りて使うサービス。" },
-  { term: "SaaS", en: "Software as a Service", desc: "ソフトウェアをインターネット経由で利用するクラウドサービス。メールや会計など。" },
+  { term: "SaaS", en: "Software as a Service", ja: ["ソフトウェア", "として", "一つの", "サービス"], desc: "ソフトウェアをインターネット経由で利用するクラウドサービス。メールや会計など。" },
   { term: "PaaS", en: "Platform as a Service", desc: "アプリを動かす土台（OS やデータベースなど）を提供するクラウドサービス。" },
   { term: "IaaS", en: "Infrastructure as a Service", desc: "サーバやネットワークなどの基盤だけを提供するクラウドサービス。OS から上は利用者が管理。" },
   { term: "シャドーIT", en: "IT = Information Technology", desc: "会社の許可なく、従業員がクラウドサービスや私物端末を業務に使うこと。" },
   { term: "シンクライアント", desc: "端末にデータを残さず、処理をサーバ側で行う方式。紛失しても漏えいしにくい。" },
-  { term: "OS", en: "Operating System", desc: "Windows や Android など、コンピュータを動かす基本のソフトウェア。" },
+  { term: "OS", en: "Operating System", ja: ["動作させる", "システム"], desc: "Windows や Android など、コンピュータを動かす基本のソフトウェア。" },
 
   { term: "IP", en: "Internet Protocol", ja: ["インターネット", "通信の決まり（プロトコル）"], desc: "インターネットで通信相手を IP アドレスで指定し、データを届けるためのプロトコル。" },
   { term: "IPv6", en: "Internet Protocol version 6", desc: "128 ビットの IP アドレスを使う IP の新しい版。IPv4 のアドレス不足を解消する。" },
