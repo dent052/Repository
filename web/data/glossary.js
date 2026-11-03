@@ -1,6 +1,28 @@
 // 用語集。話・決め手の1文・解説の中でタップすると、一言の説明を表示する。
 
 export const glossary = [
+  // ---- 第35話で使う用語 ----
+  { term: "OLA", en: "Operational Level Agreement", ja: ["運用の", "水準", "合意"], desc: "サービス提供者と内部グループが、サービスと目標について取り交わす運用レベル合意書。" },
+  { term: "サービスマネジメントシステム", en: "Service Management System", ja: ["サービス", "管理", "仕組み"], desc: "サービスの計画・提供・評価・改善を継続的に行い、合意したサービス品質を管理する組織の仕組み。" },
+  { term: "サービスカタログ", en: "Service Catalogue", ja: ["サービス", "一覧"], desc: "提供するサービスの一覧と、その内容や利用方法などを顧客に示す文書。" },
+  { term: "エスカレーション", en: "Escalation", ja: ["段階を上げること"], desc: "一次対応で解決できない事象を専門担当へ引き継ぐなど、適切な担当や管理者へ対応を上げること。" },
+  { term: "エラープルーフ化", en: "Error Proofing", ja: ["誤り", "防止"], desc: "作業の仕組みや環境を工夫し、人の誤りを起こしにくく、起きても気付きやすくすること。" },
+  { term: "移行テスト", en: "Migration Test", ja: ["移行", "試験"], desc: "既存から新システムへの切替え手順の確実性や効率性、切替えに伴う問題点を確認する試験。" },
+  { term: "非機能要件", en: "Non-functional Requirements", ja: ["機能以外の", "要求事項"], desc: "処理の内容ではなく、性能・可用性・セキュリティなどの品質や制約に関する要件。" },
+
+  // ---- 第33話で使う用語 ----
+  { term: "著作者人格権", en: "Moral Rights", ja: ["人格的な", "権利"], desc: "公表権・氏名表示権・同一性保持権。著作者自身に属し、他人に譲渡できない権利。" },
+  { term: "同一性保持権", en: "Right of Integrity", ja: ["権利", "の", "同一性"], desc: "著作物やその題号を、著作者の意に反して変更・切除などされない権利。法定の例外もある。" },
+  { term: "秘密管理性", en: "Secrecy Management", ja: ["秘密", "管理"], desc: "情報に接する人が秘密と認識できるよう、表示やアクセス制限などで秘密として管理されていること。" },
+  { term: "有用性", en: "Usefulness", ja: ["役立つこと"], desc: "事業活動に役立つ技術上・営業上の情報であること。失敗した実験の記録にも認められる。" },
+  { term: "非公知性", en: "Non-Public Nature", ja: ["公になっていない", "性質"], desc: "公然と知られておらず、保有者の管理下以外では一般に入手できない状態にあること。" },
+  { term: "シュリンクラップ契約", en: "Shrink-Wrap Agreement", ja: ["包装フィルム", "契約"], desc: "包装に使用許諾条件を示し、その包装を解くことで条件に同意したとみなす契約方式。" },
+  { term: "クリックラップ契約", en: "Clickwrap Agreement", ja: ["クリックによる同意", "契約"], desc: "画面に示した使用許諾条件などに、同意ボタンを押すことで承諾する契約方式。" },
+  { term: "ボリュームライセンス", en: "Volume License", ja: ["大量の", "利用許諾"], desc: "多数の端末などで使う利用権を一括で契約する方式。許諾された台数などの条件を守る必要がある。" },
+  { term: "二重派遣", en: "Double Dispatch", ja: ["二重の", "派遣"], desc: "派遣先が受け入れた労働者を、さらに他社の指揮命令下で働かせる、禁止された形態。" },
+  { term: "就業規則", en: "Rules of Employment", ja: ["規則", "の", "雇用"], desc: "労働時間・賃金・服務規律などの規則。常時10人以上の事業場では作成と届出が必要。" },
+  { term: "36協定", en: "Article 36 Agreement", ja: ["条文", "36", "協定"], desc: "原則として法定時間外・休日労働を行わせる前に締結し、労働基準監督署へ届け出る労使協定。" },
+
   // ---- 第30話で使う用語 ----
   { term: "ギャップ分析", en: "Gap Analysis", ja: ["差", "分析"], desc: "基準となる望ましい対策と現状を比較し、不足や差を明らかにする分析。" },
   { term: "セキュア OS", en: "Secure Operating System", ja: ["安全な", "動作させる", "システム"], desc: "管理者の方針による強制的なアクセス制御や、管理者特権の分割などで保護を強化した基本ソフト。" },
@@ -256,7 +278,7 @@ export const glossary = [
   { term: "JIS Q 27002", en: "JIS = Japanese Industrial Standards（日本産業規格）", desc: "情報セキュリティの具体的な管理策（対策）の手引を示した規格。" },
   { term: "JIS Q 27000", en: "JIS = Japanese Industrial Standards（日本産業規格）", desc: "ISMS 規格で使う用語の定義を定めた規格。" },
   { term: "JIS Q 31000", en: "JIS = Japanese Industrial Standards（日本産業規格）", desc: "リスクマネジメントの原則と進め方の指針を示した規格。" },
-  { term: "PDCA", en: "Plan-Do-Check-Act", desc: "計画（Plan）→実行（Do）→評価（Check）→改善（Act）を繰り返す管理の進め方。" },
+  { term: "PDCA", en: "Plan-Do-Check-Act", ja: ["計画する", "実行する", "評価する", "改善する"], desc: "計画（Plan）→実行（Do）→評価（Check）→改善（Act）を繰り返す管理の進め方。" },
   { term: "情報セキュリティポリシー", desc: "組織の情報セキュリティの方針とルールをまとめた文書。基本方針と対策基準。" },
   { term: "基本方針", desc: "情報セキュリティへの組織の考え方と姿勢を示す、ポリシーの最上位の文書。" },
   { term: "対策基準", desc: "基本方針を実現するために守るべき具体的なルール。" },
@@ -284,7 +306,7 @@ export const glossary = [
   { term: "情報セキュリティ管理基準", desc: "経済産業省が定めた、ISMS の構築・運用と監査の基準。" },
   { term: "サポートユーティリティ", desc: "電気・通信・空調など、情報処理設備の稼働を支える設備。" },
   { term: "情報資産台帳", desc: "情報資産の名前・管理責任者・保管場所・重要度などをまとめた一覧。" },
-  { term: "SLA", en: "Service Level Agreement", desc: "サービスの品質（稼働率や対応時間など）について提供者と利用者が合意した文書。" },
+  { term: "SLA", en: "Service Level Agreement", ja: ["サービス", "水準", "合意"], desc: "サービスの品質（稼働率や対応時間など）について提供者と利用者が合意した文書。" },
   { term: "サイバー保険", desc: "サイバー攻撃などによる損害を補償する保険。リスク移転の例。" },
 
   { term: "ISMAP", en: "Information system Security Management and Assessment Program", ja: ["情報（システム）", "セキュリティ", "管理", "評価", "制度（プログラム）"], desc: "政府が安全性を評価したクラウドサービスを登録する制度。" },
@@ -482,12 +504,19 @@ export const glossary = [
   { term: "CSR", en: "Corporate Social Responsibility", desc: "企業の社会的責任。法令遵守に加え、社会や環境に配慮した経営を行うこと。" },
   { term: "CSF", en: "Critical Success Factor", desc: "重要成功要因。目標を達成するために特に重要な要因。" },
   { term: "BSC", en: "Balanced Scorecard", desc: "財務・顧客・業務プロセス・学習と成長の4つの視点で業績を評価する手法。" },
-  { term: "SLO", en: "Service Level Objective", desc: "サービスレベル目標。SLA で約束する、稼働率などの測定可能な目標値。" },
+  { term: "SLO", en: "Service Level Objective", ja: ["サービス", "水準", "目標"], desc: "サービスレベル目標。SLA で約束する、稼働率などの測定可能な目標値。" },
   { term: "PERT", en: "Program Evaluation and Review Technique", desc: "作業の順序と日数をアローダイアグラムで表し、日程を管理する手法。" },
   { term: "RFQ", en: "Request For Quotation", desc: "見積依頼書。要件が固まった段階でベンダーに見積りを求める文書。" },
   { term: "DevOps", en: "Development と Operations の合成語", desc: "開発と運用が連携し、短い周期でリリースを繰り返す考え方。" },
   { term: "DevSecOps", en: "Development, Security, Operations の合成語", desc: "DevOps の流れの中にセキュリティの取組を組み込む考え方。" },
   { term: "QC", en: "Quality Control", desc: "品質管理。QC 七つ道具はパレート図や特性要因図など、品質改善に使う手法。" },
+  // ---- 第34話 監査の手続と尺度 ----
+  { term: "ITF", en: "Integrated Test Facility", ja: ["統合された", "試験", "設備"], desc: "本番に監査用の架空口座などを設け、試験データを流して処理の正確性を確かめる技法。" },
+  { term: "ウォークスルー法", desc: "データの生成から入力・処理・出力・活用まで、統制を含めて書面や実物で追う監査技法。" },
+  { term: "コントロールトータルチェック", desc: "受渡し前後の件数や金額の合計を照合し、データの欠落や重複などを検出する手続。" },
+  { term: "情報セキュリティ監査基準", desc: "情報セキュリティ監査人の独立性、監査の計画・実施・報告などの行動や手続を定める基準。" },
+  { term: "アシュアランス型", desc: "監査対象の対策が適切かを検証・評価し、監査意見として保証を与える監査の形態。旧称は保証型。" },
+  { term: "アドバイザリー型", desc: "監査対象の対策の改善に役立つ助言を行う監査の形態。旧称は助言型で、保証とは区別する。" },
 ];
 
 // 略語の組み立てミニゲームで、外れの候補に混ぜる単語（正式名称によく出る英単語）
