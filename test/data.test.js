@@ -147,7 +147,7 @@ const SPEAKERS = new Set(["n", "s", "o", "m", "t"]);
 const questionsOf = (e) => e.steps.filter((x) => typeof x === "string");
 const scenesOf = (e) => e.steps.filter((x) => x.scene).map((x) => x.scene);
 
-test("話は1からの連番で、場面・3つの結末・8〜12問を持ち、問題は全て論点に入り話の間で重複しない", () => {
+test("話は1からの連番で、場面・3つの結末・8〜12問（科目Bだけの話は4〜6問）を持ち、問題は全て論点に入り話の間で重複しない", () => {
   assert.deepEqual(episodes.map((e) => e.no), episodes.map((_, i) => i + 1));
   const inPoint = new Set(points.flatMap((p) => p.questions));
   const seen = new Set();
@@ -155,7 +155,8 @@ test("話は1からの連番で、場面・3つの結末・8〜12問を持ち、
     assert.ok(e.title, e.no);
     assert.equal(e.endings.length, 3, `第${e.no}話の結末`);
     const qs = questionsOf(e);
-    assert.ok(qs.length >= 8 && qs.length <= 12, `第${e.no}話は ${qs.length} 問`);
+    const [min, max] = qs.every((id) => id.startsWith("b-")) ? [4, 6] : [8, 12];
+    assert.ok(qs.length >= min && qs.length <= max, `第${e.no}話は ${qs.length} 問`);
     for (const id of qs) {
       assert.ok(byId.has(id), `第${e.no}話: ${id} がない`);
       assert.ok(inPoint.has(id), `第${e.no}話: ${id} に論点がない`);
