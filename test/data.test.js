@@ -165,6 +165,12 @@ test("話は1からの連番で、場面・3つの結末・8〜12問を持ち、
   }
 });
 
+test("第15話以降は、最後の問題が科目Bの事例問題", () => {
+  for (const e of episodes.filter((e) => e.no >= 15)) {
+    assert.equal(byId.get(questionsOf(e).at(-1)).chapter, 10, `第${e.no}話の最後が科目Bでない`);
+  }
+});
+
 test("場面は題・話す人・覚えどころ・教える論点を持ち、問題の論点はそれより前の場面で教えている", () => {
   const pointOf = new Map(points.flatMap((p) => p.questions.map((id) => [id, p.id])));
   const pointIds = new Set(points.map((p) => p.id));
