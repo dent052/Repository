@@ -14810,7 +14810,7 @@ function startEpisode() {
   const cur = currentOf(e) ?? { no: e.no, seq: episodeSeq(e), follow: [], i: 0, first: {}, learned: [], before: score() };
   progress.ep.cur = cur;
   save();
-  const s = { name: "session", kind: "episode", title: `第${e.no}話 ${e.title}`, ep: e, cur, i: cur.i, revealed: false, combo: 0, best: 0, xp: 0 };
+  const s = { name: "session", kind: "episode", title: `第${e.no}話 ${e.title}`, ep: e, cur, i: cur.i, revealed: false, combo: cur.combo ?? 0, best: cur.best ?? 0, xp: cur.xp ?? 0 };
   // 最後まで進めたのに結末を見ずに閉じていたら、そのまま結末へ
   if (cur.i >= cur.seq.length) { view = s; finishSession(); return; }
   go(s);
@@ -15148,7 +15148,7 @@ function advance(s) {
   s.revealed = false;
   s.picked = null;
   s.hinted = false;
-  if (s.kind === "episode") { s.cur.i = s.i; save(); }
+  if (s.kind === "episode") { s.cur.i = s.i; keepScore(s); save(); }
   if (s.i >= lengthOf(s)) return finishSession();
   render();
   window.scrollTo(0, 0);
@@ -15190,6 +15190,12 @@ function answerEpisode(s, q, ok) {
     }
   }
   c.i = s.i + 1; // 閉じて開き直したら、次の手順から
+  keepScore(s);
+}
+
+// XP と連続正解も途中の話に保存し、再開したときに戻す
+function keepScore(s) {
+  Object.assign(s.cur, { xp: s.xp, best: s.best, combo: s.combo });
 }
 
 function finishSession() {
@@ -15235,7 +15241,7 @@ function renderResult() {
 </section>
 ${wrong.length ? `<section class="block"><h2>間違えた問題（${wrong.length}問）</h2><p class="sub">明日の後始末にもう一度出ます。</p>
   ${wrong.map(({ q, picked }) => `<details><summary>${q.question.replace(/<[^>]+>/g, " ").slice(0, 60)}…</summary>
-    <div class="ask">${q.question}</div>${choicesHtml(q, picked, true)}
+    ${q.scenario ? `<div class="scenario">${q.scenario}</div>` : ""}<div class="ask">${q.question}</div>${choicesHtml(q, picked, true)}
     <div class="explain">${pointOf.has(q.id) ? `<p class="hook"><b>${pointOf.get(q.id).title}</b>${pointOf.get(q.id).hook}</p>` : ""}<p>${q.explanation}</p></div>
   </details>`).join("")}</section>` : ""}
 <div class="foot"><div><button class="go" id="home">ホームへ</button></div></div>`;

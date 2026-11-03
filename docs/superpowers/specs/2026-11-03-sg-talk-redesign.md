@@ -87,7 +87,7 @@
 
 ## 進捗
 
-- `ep.cur` は `{ no, seq, i, follow, first, learned, before }`。`seq` は話の手順を並べたもの（`"s:0"` = 場面、`"g:DKIM"` = 組み立て、それ以外は問題 ID）。取り返し問題も `seq` に差し込む。
+- `ep.cur` は `{ no, seq, i, follow, first, learned, before, xp, best, combo }`。XP と連続正解も保存し、再開したときに戻す。`seq` は話の手順を並べたもの（`"s:0"` = 場面、`"g:DKIM"` = 組み立て、それ以外は問題 ID）。取り返し問題も `seq` に差し込む。
 - それ以外（stats・days・examDate・exams・ep.next・ep.results）は今のまま。
 
 ## 残すもの・変えないもの

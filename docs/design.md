@@ -255,7 +255,7 @@ export const PLANNED_EPISODES = 30;
   ep: {
     next: 3,                                // 次に始める話の番号
     results: { "1": 0.8, "2": 0.6 },        // 解決した話の正答率
-    cur: { no: 3, seq: ["s:0", "g:DKIM", "a2-01", "…"], follow: [4], i: 5, first: { "a2-01": true }, learned: ["bec"], before: 412 }, // 途中の話（手順・取り返し問題の位置・次の位置・1回目の正誤・わかった論点・始めたときの予測点）。なければ null
+    cur: { no: 3, seq: ["s:0", "g:DKIM", "a2-01", "…"], follow: [4], i: 5, first: { "a2-01": true }, learned: ["bec"], before: 412, xp: 60, best: 3, combo: 1 }, // 途中の話（手順・取り返し問題の位置・次の位置・1回目の正誤・わかった論点・始めたときの予測点・ここまでの XP・最高連続・今の連続）。なければ null
   }
 }
 ```
