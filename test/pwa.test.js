@@ -27,6 +27,12 @@ test("index.html は manifest を参照し、Service Worker が保存するフ�
   }
 });
 
+test("Service Worker は HTTP キャッシュを使わずに取りに行く（古い index.html と新しい app.js を混ぜない）", () => {
+  const sw = readFileSync(web("sw.js"), "utf8");
+  assert.match(sw, /fetch\(req, \{ cache: "no-cache" \}\)/);
+  assert.match(sw, /new Request\(f, \{ cache: "no-cache" \}\)/);
+});
+
 test("1ファイル版には manifest のリンクがない（Service Worker を登録しない）", () => {
   assert.doesNotMatch(bundle(), /<link rel="manifest"/);
 });

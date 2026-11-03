@@ -306,6 +306,7 @@ dist/sg-trainer.html  1ファイル版（ビルド結果。リポジトリに含
 - `web/manifest.webmanifest` で名前・アイコン・テーマ色を定め、`display: standalone` で URL 欄のない全画面で起動する。
 - `web/sw.js`（Service Worker）で、アプリのファイルを端末に保存してオフラインでも開けるようにする。
   - 取得はネットワーク優先: オンラインなら常に最新を取りに行って保存し直し、オフラインなら保存済みのものを返す。更新のたびにキャッシュ名を変える必要がない。
+  - 取りに行くときはブラウザの HTTP キャッシュを使わない（`cache: "no-cache"`）。GitHub Pages は10分のキャッシュを返すため、使うと古い index.html と新しい app.js が混ざり、CSS の無い部品（カギが黒く大きく出るなど）が出る。
   - 保存するのはアプリ自身のファイル（同じオリジンの GET）だけ。対象は決まった数のファイルなので、キャッシュは増え続けない。
 - Service Worker は manifest のリンクがあるページ（インストール版）でだけ登録する。1ファイル版と Artifact では manifest のリンクを取り除くので登録しない。
 - 公開は `npm run deploy`（`web/` を `gh-pages` ブランチにプッシュする）。初回だけ、リポジトリの Settings → Pages で「Deploy from a branch」「gh-pages」「/ (root)」を選ぶ。
