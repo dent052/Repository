@@ -2,11 +2,11 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { questionsA } from "../web/data/questions-a.js";
 import { questionsB } from "../web/data/questions-b.js";
-import { glossary } from "../web/data/glossary.js";
+import { glossary, decoyWords } from "../web/data/glossary.js";
 import { pastExams, pastQuestions } from "../web/data/questions-past.js";
 import { points } from "../web/data/points.js";
 import { episodes } from "../web/data/episodes.js";
-import { MOCK_B, MOCK_QUOTA } from "../web/core.js";
+import { MOCK_B, MOCK_QUOTA, acronymWords, pickDecoys } from "../web/core.js";
 
 const all = [...questionsA, ...questionsB, ...pastQuestions];
 
@@ -72,7 +72,7 @@ test("用語集は一意で、80字以内の説明を持ち、話・決め手の
   assert.equal(new Set(terms).size, terms.length);
   const plain = (s) => s.replace(/<[^>]+>/g, "").replaceAll("&amp;", "&");
   const corpus = [
-    ...episodes.map((e) => plain(e.intro)), ...points.map((p) => p.hook),
+    ...episodes.flatMap((e) => scenesOf(e).flatMap((sc) => sc.lines.map(([, t]) => plain(t)))), ...points.map((p) => p.hook),
     ...all.map((q) => plain(q.explanation)), ...all.map((q) => plain(q.scenario ?? "")),
   ].join("\n");
   for (const g of glossary) {
@@ -143,19 +143,62 @@ test("論点は一意で、決め手の1文は100字以内、問題は全て存�
   }
 });
 
-test("話は1からの連番で、導入と3つの結末と 8〜12問を持ち、問題は全て論点に入り話の間で重複しない", () => {
+const SPEAKERS = new Set(["n", "s", "o", "m", "t"]);
+const questionsOf = (e) => e.steps.filter((x) => typeof x === "string");
+const scenesOf = (e) => e.steps.filter((x) => x.scene).map((x) => x.scene);
+
+test("話は1からの連番で、場面・3つの結末・8〜12問を持ち、問題は全て論点に入り話の間で重複しない", () => {
   assert.deepEqual(episodes.map((e) => e.no), episodes.map((_, i) => i + 1));
   const inPoint = new Set(points.flatMap((p) => p.questions));
   const seen = new Set();
   for (const e of episodes) {
-    assert.ok(e.title && e.intro, e.no);
+    assert.ok(e.title, e.no);
     assert.equal(e.endings.length, 3, `第${e.no}話の結末`);
-    assert.ok(e.questions.length >= 8 && e.questions.length <= 12, `第${e.no}話は ${e.questions.length} 問`);
-    for (const id of e.questions) {
+    const qs = questionsOf(e);
+    assert.ok(qs.length >= 8 && qs.length <= 12, `第${e.no}話は ${qs.length} 問`);
+    for (const id of qs) {
       assert.ok(byId.has(id), `第${e.no}話: ${id} がない`);
       assert.ok(inPoint.has(id), `第${e.no}話: ${id} に論点がない`);
       assert.ok(!seen.has(id), `${id} が2つの話に入っている`);
       seen.add(id);
     }
+  }
+});
+
+test("場面は題・話す人・覚えどころ・教える論点を持ち、問題の論点はそれより前の場面で教えている", () => {
+  const pointOf = new Map(points.flatMap((p) => p.questions.map((id) => [id, p.id])));
+  const pointIds = new Set(points.map((p) => p.id));
+  for (const e of episodes) {
+    assert.ok(e.steps[0].scene, `第${e.no}話は場面から始まる`);
+    const taught = new Set();
+    for (const step of e.steps) {
+      if (step.scene) {
+        const sc = step.scene;
+        assert.ok(sc.title && sc.lines.length >= 3, `第${e.no}話「${sc.title}」`);
+        for (const [who, text] of sc.lines) assert.ok(SPEAKERS.has(who) && text, `第${e.no}話「${sc.title}」の話す人 ${who}`);
+        assert.ok(sc.lines.some(([, t]) => t.includes("<mark>")), `第${e.no}話「${sc.title}」に覚えどころがない`);
+        for (const p of sc.points) { assert.ok(pointIds.has(p), `第${e.no}話: 論点 ${p} がない`); taught.add(p); }
+      } else if (typeof step === "string") {
+        assert.ok(taught.has(pointOf.get(step)), `第${e.no}話: ${step}（${pointOf.get(step)}）を教える場面がその前にない`);
+      }
+    }
+  }
+});
+
+test("略語の組み立ては、正式名称を1文字ずつ分けられ、外れの候補が2つ以上ある略語だけ", () => {
+  const pool = [...glossary.flatMap((g) => acronymWords(g.term, g.en) ?? []), ...decoyWords].filter((w) => /^[A-Z][a-z-]{3,}$/.test(w));
+  for (const e of episodes) for (const step of e.steps.filter((x) => x.game)) {
+    const g = glossary.find((x) => x.term === step.game);
+    const words = g && acronymWords(g.term, g.en);
+    assert.ok(words, `第${e.no}話: ${step.game} を分けられない`);
+    for (const w of words) assert.ok(pickDecoys(w, pool, 2).length === 2, `${step.game} の ${w} に外れの候補が足りない`);
+  }
+});
+
+test("略語の日本語（ja）は単語と同じ数で、場面に出てくる略語は ja を持つ", () => {
+  const acr = new Map(glossary.filter((g) => acronymWords(g.term, g.en)).map((g) => [g.term, g]));
+  for (const g of acr.values()) if (g.ja) assert.equal(g.ja.length, acronymWords(g.term, g.en).length, g.term);
+  for (const e of episodes) for (const sc of scenesOf(e)) for (const [, t] of sc.lines) {
+    for (const m of t.matchAll(/[A-Z]{2,}/g)) if (acr.has(m[0])) assert.ok(acr.get(m[0]).ja, `${m[0]}（第${e.no}話「${sc.title}」）に ja がない`);
   }
 });

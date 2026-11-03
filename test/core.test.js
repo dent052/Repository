@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import {
   shuffle,
   recordAnswer, MOCK_QUOTA, MOCK_A, buildMockExam, scoreExam,
-  addDays, dueIds, predictScore, streakDays, markDay, examPlan, findTerms, markUnsure, followUp, endingIndex,
+  addDays, dueIds, predictScore, streakDays, markDay, examPlan, findTerms, markUnsure, followUp, endingIndex, acronymWords, pickDecoys,
 } from "../web/core.js";
 
 const fixedRng = () => 0;
@@ -176,4 +176,26 @@ test("endingIndex は正答率 0.8以上で0、0.5以上で1、それ未満で2"
   assert.equal(endingIndex(0.5), 1);
   assert.equal(endingIndex(0.49), 2);
   assert.equal(endingIndex(0), 2);
+});
+
+test("acronymWords は正式名称を、略語の1文字ずつに対応する単語に分ける", () => {
+  assert.deepEqual(acronymWords("SPF", "Sender Policy Framework"), ["Sender", "Policy", "Framework"]);
+  assert.deepEqual(acronymWords("DKIM", "DomainKeys Identified Mail"), ["Domain", "Keys", "Identified", "Mail"]);
+  assert.deepEqual(acronymWords("DMARC", "Domain-based Message Authentication, Reporting and Conformance"),
+    ["Domain-based", "Message", "Authentication", "Reporting", "Conformance"]);
+});
+
+test("acronymWords は頭文字が合わないときと、略語でない語のときは null", () => {
+  assert.equal(acronymWords("SPF", "Something Else"), null);
+  assert.equal(acronymWords("IPsec", "IP Security"), null);
+  assert.equal(acronymWords("SPF", undefined), null);
+});
+
+test("pickDecoys は同じ頭文字の別の単語を重複なく選ぶ", () => {
+  const pool = ["Domain", "Data", "Digital", "Data", "Mail", "Device"];
+  const d = pickDecoys("Domain", pool, 2, () => 0);
+  assert.equal(d.length, 2);
+  assert.ok(d.every((w) => w[0] === "D" && w !== "Domain"));
+  assert.equal(new Set(d).size, 2);
+  assert.deepEqual(pickDecoys("Zebra", pool, 2), []);
 });
