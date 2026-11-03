@@ -156,3 +156,17 @@ export function followUp(point, used, stats, inEpisodes) {
 export function endingIndex(rate) {
   return rate >= 0.8 ? 0 : rate >= 0.5 ? 1 : 2;
 }
+
+// ---- 略語の分解 ----
+// 正式名称を、略語の1文字ずつに対応する単語に分ける（"DomainKeys" のような続け書きも分ける）。合わなければ null
+export function acronymWords(term, en) {
+  if (!/^[A-Z]{2,}$/.test(term) || !en) return null;
+  const words = en.split(/[\s,]+/).flatMap((w) => w.split(/(?<=[a-z])(?=[A-Z])/)).filter((w) => /^[A-Z]/.test(w));
+  return words.map((w) => w[0]).join("") === term ? words : null;
+}
+
+// 組み立てミニゲームの外れの候補: 同じ頭文字の別の単語
+export function pickDecoys(word, pool, n, rng = Math.random) {
+  const cands = [...new Set(pool)].filter((w) => w[0] === word[0] && w !== word);
+  return shuffle(cands, rng).slice(0, n);
+}
