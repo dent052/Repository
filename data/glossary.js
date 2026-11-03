@@ -1,6 +1,14 @@
 // 用語集。話・決め手の1文・解説の中でタップすると、一言の説明を表示する。
 
 export const glossary = [
+  // ---- 第38話で使う用語 ----
+  { term: "E-R 図", en: "Entity Relationship Diagram", ja: ["実体", "関連", "図"], desc: "管理する実体と実体間の関連を表す概念データモデル。業務手順やデータ操作の流れとは異なる。" },
+  { term: "ホットスタンバイ", en: "Hot Standby", ja: ["稼働中の", "待機"], desc: "待機系を動作状態に保ち、現用系の故障時に自動で迅速に切り替える方式。" },
+  { term: "フォールトトレランス", en: "Fault Tolerance", ja: ["故障", "耐性"], desc: "冗長構成などにより、一部の機器が故障してもシステム全体の機能を継続する設計。" },
+  { term: "デッドロック", en: "Deadlock", ja: ["相互待ち"], desc: "複数の処理が互いに相手のロック解放を待ち、どちらも先へ進めなくなる状態。" },
+  { term: "コミット", en: "Commit", ja: ["確定"], desc: "トランザクションで行った一連のデータ更新を確定すること。" },
+  { term: "データマイニング", en: "Data Mining", ja: ["データ", "採掘"], desc: "大量のデータから統計的手法などで傾向やパターンを発見し、新たな知識を得る分析。" },
+
   // ---- 第35話で使う用語 ----
   { term: "OLA", en: "Operational Level Agreement", ja: ["運用の", "水準", "合意"], desc: "サービス提供者と内部グループが、サービスと目標について取り交わす運用レベル合意書。" },
   { term: "サービスマネジメントシステム", en: "Service Management System", ja: ["サービス", "管理", "仕組み"], desc: "サービスの計画・提供・評価・改善を継続的に行い、合意したサービス品質を管理する組織の仕組み。" },
@@ -425,9 +433,9 @@ export const glossary = [
   { term: "データマート", desc: "データウェアハウスから、特定の部門や目的のためにデータを切り出したもの。" },
   { term: "ビッグデータ", desc: "量・種類・発生頻度が非常に大きいデータ。SNS の投稿やセンサーの記録など。" },
   { term: "稼働率", desc: "全体の時間のうち、システムが正常に動いている時間の割合。MTBF ÷ (MTBF + MTTR)。" },
-  { term: "MTBF", en: "Mean Time Between Failures", desc: "平均故障間隔。故障してから次に故障するまでの平均の稼働時間。長いほどよい。" },
-  { term: "MTTR", en: "Mean Time To Repair", desc: "平均修復時間。故障してから直るまでの平均の時間。短いほどよい。" },
-  { term: "RASIS", en: "Reliability, Availability, Serviceability, Integrity, Security", desc: "信頼性・可用性・保守性・完全性・安全性の5つの頭文字。システムの評価指標。" },
+  { term: "MTBF", en: "Mean Time Between Failures", ja: ["平均", "時間", "間の", "故障"], desc: "平均故障間隔。故障してから次に故障するまでの平均の稼働時間。長いほどよい。" },
+  { term: "MTTR", en: "Mean Time To Repair", ja: ["平均", "時間", "までの", "修復"], desc: "平均修復時間。故障してから直るまでの平均の時間。短いほどよい。" },
+  { term: "RASIS", en: "Reliability, Availability, Serviceability, Integrity, Security", ja: ["信頼性", "可用性", "保守性", "完全性", "安全性"], desc: "信頼性・可用性・保守性・完全性・安全性の5つの頭文字。システムの評価指標。" },
   { term: "冗長化", desc: "機器や回線を二重にするなど予備を持たせ、故障しても止まらないようにすること。" },
   { term: "フェールセーフ", desc: "故障したときに、安全な側に止まるようにする設計。" },
   { term: "フェールソフト", desc: "故障したときに、機能を落としてでも運転を続ける設計。" },
@@ -438,8 +446,8 @@ export const glossary = [
   { term: "UPS", en: "Uninterruptible Power Supply", ja: ["止まらない", "電源", "供給"], desc: "無停電電源装置。停電時にしばらく電気を供給し、安全に停止させる。" },
   { term: "クラウドサービス", desc: "サーバやソフトを自社で持たず、インターネット経由で借りて使うサービス。" },
   { term: "SaaS", en: "Software as a Service", ja: ["ソフトウェア", "として", "一つの", "サービス"], desc: "ソフトウェアをインターネット経由で利用するクラウドサービス。メールや会計など。" },
-  { term: "PaaS", en: "Platform as a Service", desc: "アプリを動かす土台（OS やデータベースなど）を提供するクラウドサービス。" },
-  { term: "IaaS", en: "Infrastructure as a Service", desc: "サーバやネットワークなどの基盤だけを提供するクラウドサービス。OS から上は利用者が管理。" },
+  { term: "PaaS", en: "Platform as a Service", ja: ["プラットフォーム", "として", "一つの", "サービス"], desc: "アプリを動かす土台（OS やデータベースなど）を提供するクラウドサービス。" },
+  { term: "IaaS", en: "Infrastructure as a Service", ja: ["基盤", "として", "一つの", "サービス"], desc: "サーバやネットワークなどの基盤だけを提供するクラウドサービス。OS から上は利用者が管理。" },
   { term: "シャドーIT", en: "IT = Information Technology", desc: "会社の許可なく、従業員がクラウドサービスや私物端末を業務に使うこと。" },
   { term: "シンクライアント", desc: "端末にデータを残さず、処理をサーバ側で行う方式。紛失しても漏えいしにくい。" },
   { term: "OS", en: "Operating System", ja: ["動作させる", "システム"], desc: "Windows や Android など、コンピュータを動かす基本のソフトウェア。" },
@@ -457,7 +465,7 @@ export const glossary = [
   { term: "FQDN", en: "Fully Qualified Domain Name", desc: "ホスト名とドメイン名を省略せずにつなげた名前（例: www.example.co.jp）。" },
   { term: "BIOS", en: "Basic Input/Output System", desc: "PC の起動時に最初に動き、ハードウェアを初期化するプログラム。" },
   { term: "DB", en: "Database", desc: "データベース。データを整理して蓄積し、検索・更新できるようにしたもの。" },
-  { term: "DBMS", en: "Database Management System", desc: "データベースを管理するソフトウェア。排他制御や障害回復を行う。" },
+  { term: "DBMS", en: "Database Management System", ja: ["データベース", "管理", "システム"], desc: "データベースを管理するソフトウェア。排他制御や障害回復を行う。" },
   // ---- 第9章 マネジメント・ストラテジ ----
   { term: "システム監査", desc: "独立した立場の監査人が、情報システムのリスク管理が適切かを点検し、改善を勧める活動。" },
   { term: "監査証拠", desc: "監査人が結論の根拠として集める資料や記録。" },
