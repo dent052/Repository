@@ -251,7 +251,7 @@ export const glossary = [
   { term: "RPO", en: "Recovery Point Objective", ja: ["復旧", "時点", "目標"], desc: "目標復旧時点。障害時に、どの時点のデータまで戻せればよいかの目標。" },
   { term: "ホットサイト", desc: "本番と同じ設備を常に動かしておき、すぐに切り替えられる代替拠点。" },
   { term: "コールドサイト", desc: "場所や電源だけを用意した代替拠点。機器の準備から始めるので復旧に時間がかかる。" },
-  { term: "ISAC", en: "Information Sharing and Analysis Center", desc: "同じ業界の組織が、サイバー攻撃の情報を共有・分析する組織。" },
+  { term: "ISAC", en: "Information Sharing and Analysis Center", ja: ["情報", "共有", "分析", "センター"], desc: "同じ業界の組織が、サイバー攻撃の情報を共有・分析する組織。" },
   { term: "PSIRT", en: "Product Security Incident Response Team", ja: ["製品", "セキュリティ", "インシデント", "対応", "チーム"], desc: "自社製品の脆弱性に対応するチーム。報告の受付、修正、公表を行う。" },
   { term: "J-CRAT", en: "Cyber Rescue and Advice Team against targeted attack of Japan", desc: "IPA の、標的型サイバー攻撃を受けた組織の相談を受けて対応を支援する活動。" },
   { term: "J-CSIP", en: "Initiative for Cyber Security Information sharing Partnership of Japan", desc: "IPA を中心に、重要インフラなどの企業がサイバー攻撃の情報を共有する取組み。" },
@@ -260,7 +260,8 @@ export const glossary = [
   { term: "国家サイバー統括室", desc: "内閣官房に置かれた、政府のサイバーセキュリティ政策の司令塔。NISC の後継。" },
   { term: "内閣官房", desc: "内閣の補佐機関。国家サイバー統括室が置かれている。" },
 
-  { term: "NISC", en: "National center of Incident readiness and Strategy for Cybersecurity", desc: "内閣サイバーセキュリティセンター。2025年に国家サイバー統括室へ改組された。" },
+  { term: "NISC", en: "National center of Incident readiness and Strategy for Cybersecurity", ja: ["国家の（センター）", "インシデント（への備え）", "戦略", "サイバーセキュリティ"], desc: "内閣サイバーセキュリティセンター。2025年に国家サイバー統括室へ改組された。" },
+  { term: "NCO", en: "National Cybersecurity Office", ja: ["国家", "サイバーセキュリティ", "室（オフィス）"], desc: "国家サイバー統括室。内閣官房に置かれ、政府のサイバーセキュリティ政策の司令塔を担う。" },
   { term: "BCM", en: "Business Continuity Management", desc: "事業継続マネジメント。BCP の策定・訓練・見直しを継続的に行う取組。" },
   // ---- 第7章 法務と標準・ガイドライン ----
   { term: "不正アクセス禁止法", desc: "他人の ID・パスワードの無断使用や、その不正な取得・提供などを禁止する法律。" },
