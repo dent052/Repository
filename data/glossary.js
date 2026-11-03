@@ -260,7 +260,7 @@ export const glossary = [
   { term: "国家サイバー統括室", desc: "内閣官房に置かれた、政府のサイバーセキュリティ政策の司令塔。NISC の後継。" },
   { term: "内閣官房", desc: "内閣の補佐機関。国家サイバー統括室が置かれている。" },
 
-  { term: "NISC", en: "National center of Incident readiness and Strategy for Cybersecurity", ja: ["国家の（センター）", "インシデント（への備え）", "戦略", "サイバーセキュリティ"], desc: "内閣サイバーセキュリティセンター。2025年に国家サイバー統括室へ改組された。" },
+  { term: "NISC", en: "National center of Incident readiness and Strategy for Cybersecurity", ja: ["国家の", "インシデント", "戦略", "サイバーセキュリティ"], desc: "内閣サイバーセキュリティセンター。2025年に国家サイバー統括室へ改組された。" },
   { term: "NCO", en: "National Cybersecurity Office", ja: ["国家", "サイバーセキュリティ", "室（オフィス）"], desc: "国家サイバー統括室。内閣官房に置かれ、政府のサイバーセキュリティ政策の司令塔を担う。" },
   { term: "BCM", en: "Business Continuity Management", desc: "事業継続マネジメント。BCP の策定・訓練・見直しを継続的に行う取組。" },
   // ---- 第7章 法務と標準・ガイドライン ----
